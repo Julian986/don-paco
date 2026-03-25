@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import HeaderCart from "@/components/header-cart";
 
 export default function SiteHeader() {
   return (
@@ -89,19 +90,7 @@ export default function SiteHeader() {
                 </div>
                 Mi cuenta
               </a>
-              <a href="#" className="relative text-xs font-semibold">
-                <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#e4077d] px-1 text-[10px] font-bold text-white">
-                  0
-                </span>
-                <div className="mx-auto mb-1 flex h-9 w-9 items-center justify-center">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="h-8 w-8">
-                    <circle cx="9" cy="20" r="1.4" />
-                    <circle cx="18" cy="20" r="1.4" />
-                    <path d="M3 4h2l2.2 10.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.5L21 8H7" />
-                  </svg>
-                </div>
-                Mi carrito
-              </a>
+              <HeaderCart />
             </div>
           </div>
         </div>
