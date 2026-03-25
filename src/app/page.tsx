@@ -41,20 +41,88 @@ export default function Home() {
         Envio gratis en compras seleccionadas
       </div>
 
-      <header className="border-b border-[#e5e5e5] bg-white">
-        <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-6 px-4 py-4 md:px-6">
+      <header className="sticky top-0 z-20 border-b border-[#e5e5e5] bg-white/95 backdrop-blur">
+        <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-[#9a9a9a] md:px-6">
+          <p>Don Paco Pet Shop - Rio Negro</p>
+          <p className="hidden sm:block">Atencion personalizada y envios</p>
+        </div>
+
+        <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center gap-3 px-4 py-3 md:flex-nowrap md:gap-5 md:px-6">
           <a href="/" className="shrink-0">
             <Image
               src="/logo.png"
               alt="Logo Don Paco"
-              width={180}
-              height={180}
+              width={118}
+              height={118}
               priority
             />
           </a>
-          <nav className="hidden flex-1 items-center justify-center gap-8 text-sm font-semibold uppercase tracking-wide text-[#9a9a9a] md:flex">
+
+          <form className="order-3 w-full md:order-none md:flex-1" role="search">
+            <label htmlFor="search-products" className="sr-only">
+              Buscar producto
+            </label>
+            <div className="flex items-center overflow-hidden rounded-full border border-[#d9d9d9] bg-white focus-within:border-[#029f9c]">
+              <input
+                id="search-products"
+                name="search"
+                type="search"
+                placeholder="Buscar productos, camas, colchonetas..."
+                className="w-full px-4 py-2.5 text-sm text-[#555] outline-none placeholder:text-[#aaaaaa]"
+              />
+              <button
+                type="submit"
+                aria-label="Buscar"
+                className="h-full px-4 py-2.5 text-[#029f9c] transition-colors hover:text-[#e4077d]"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.2"
+                  className="h-6 w-6"
+                >
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="m20 20-3.5-3.5" />
+                </svg>
+              </button>
+            </div>
+          </form>
+
+          <div className="ml-auto flex items-center gap-2">
+            <button
+              type="button"
+              className="inline-flex items-center gap-2 rounded-full bg-[#e4077d] px-4 py-2 text-[11px] font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#c5066b]"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                className="h-4 w-4"
+                aria-hidden="true"
+              >
+                <circle cx="9" cy="20" r="1.5" />
+                <circle cx="18" cy="20" r="1.5" />
+                <path d="M3 4h2l2.2 10.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.5L21 8H7" />
+              </svg>
+              Mi carrito (0)
+            </button>
+          </div>
+        </div>
+
+        <nav className="border-t border-[#ececec] bg-white">
+          <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-center gap-x-8 gap-y-2 px-4 py-3 text-sm font-bold uppercase tracking-wider text-[#8d8d8d] md:px-6">
             <a href="#" className="transition-colors hover:text-[#029f9c]">
               Productos
+            </a>
+            <a href="#" className="transition-colors hover:text-[#029f9c]">
+              Perros
+            </a>
+            <a href="#" className="transition-colors hover:text-[#029f9c]">
+              Gatos
             </a>
             <a href="#" className="transition-colors hover:text-[#029f9c]">
               Ofertas
@@ -62,14 +130,8 @@ export default function Home() {
             <a href="#" className="transition-colors hover:text-[#029f9c]">
               Contacto
             </a>
-          </nav>
-          <button
-            type="button"
-            className="rounded-full border border-[#d8d8d8] px-4 py-2 text-xs font-semibold uppercase tracking-wide text-[#9a9a9a] transition-colors hover:border-[#029f9c] hover:text-[#029f9c]"
-          >
-            Mi carrito
-          </button>
-        </div>
+          </div>
+        </nav>
       </header>
 
       <section className="mx-auto w-full max-w-7xl px-4 py-8 md:px-6">
