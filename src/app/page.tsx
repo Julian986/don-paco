@@ -66,87 +66,91 @@ export default function Home() {
         </div>
 
         <div className="bg-[#029f9c] text-white">
-          <div className="flex w-full flex-wrap items-center gap-3 px-2 py-3 md:flex-nowrap md:gap-10 md:px-4">
-            <a href="/" className="shrink-0">
-              <Image
-                src="/logo.png"
-                alt="Logo Don Paco"
-                width={86}
-                height={86}
-                priority
-              />
-            </a>
-
-            <form className="order-3 w-full md:order-none md:flex-1" role="search">
-              <label htmlFor="search-products" className="sr-only">
-                Buscar producto
-              </label>
-              <div className="flex items-center overflow-hidden rounded-md bg-white">
-                <input
-                  id="search-products"
-                  name="search"
-                  type="search"
-                  placeholder="¿Qué estás buscando?"
-                  className="w-full px-4 py-3 text-sm text-[#555] outline-none placeholder:text-[#9f9f9f]"
+          <div className="mx-auto w-full max-w-[1500px] px-2 py-3 md:px-4 md:translate-x-6">
+            <div className="grid items-center gap-3 md:grid-cols-[130px_minmax(560px,760px)_260px] md:gap-8">
+              <a href="/" className="shrink-0 justify-self-start">
+                <Image
+                  src="/logo.png"
+                  alt="Logo Don Paco"
+                  width={86}
+                  height={86}
+                  priority
                 />
-                <button
-                  type="submit"
-                  aria-label="Buscar"
-                  className="border-l border-[#ededed] px-3 py-3 text-[#3f3f3f] transition-colors hover:text-[#029f9c]"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.2"
-                    className="h-5 w-5"
-                  >
-                    <circle cx="11" cy="11" r="7" />
-                    <path d="m20 20-3.5-3.5" />
-                  </svg>
-                </button>
-              </div>
-            </form>
+              </a>
 
-            <div className="ml-auto flex items-center gap-10 text-center">
-              <a href="#" className="hidden text-xs font-semibold md:block">
-                <div className="mx-auto mb-1 flex h-9 w-9 items-center justify-center">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="h-8 w-8">
-                    <path d="M12 3 3 8.2v7.6L12 21l9-5.2V8.2L12 3Z" />
-                    <path d="M12 21V11.5" />
-                  </svg>
+              <form className="order-3 w-full md:order-none md:justify-self-center" role="search">
+                <label htmlFor="search-products" className="sr-only">
+                  Buscar producto
+                </label>
+                <div className="flex items-center overflow-hidden rounded-md bg-white">
+                  <input
+                    id="search-products"
+                    name="search"
+                    type="search"
+                    placeholder="¿Qué estás buscando?"
+                    className="w-full px-4 py-3 text-sm text-[#555] outline-none placeholder:text-[#9f9f9f]"
+                  />
+                  <button
+                    type="submit"
+                    aria-label="Buscar"
+                    className="border-l border-[#ededed] px-3 py-3 text-[#3f3f3f] transition-colors hover:text-[#029f9c]"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.2"
+                      className="h-5 w-5"
+                    >
+                      <circle cx="11" cy="11" r="7" />
+                      <path d="m20 20-3.5-3.5" />
+                    </svg>
+                  </button>
                 </div>
-                Ayuda
-              </a>
-              <a href="#" className="hidden text-xs font-semibold md:block">
-                <div className="mx-auto mb-1 flex h-9 w-9 items-center justify-center">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="h-8 w-8">
-                    <circle cx="12" cy="8" r="4" />
-                    <path d="M4 21c1.8-4 5-6 8-6s6.2 2 8 6" />
-                  </svg>
-                </div>
-                Mi cuenta
-              </a>
-              <a href="#" className="relative text-xs font-semibold">
-                <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#e4077d] px-1 text-[10px] font-bold text-white">
-                  0
-                </span>
-                <div className="mx-auto mb-1 flex h-9 w-9 items-center justify-center">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="h-8 w-8">
-                    <circle cx="9" cy="20" r="1.4" />
-                    <circle cx="18" cy="20" r="1.4" />
-                    <path d="M3 4h2l2.2 10.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.5L21 8H7" />
-                  </svg>
-                </div>
-                Mi carrito
-              </a>
+              </form>
+
+              <div className="ml-auto flex items-center gap-11 text-center md:ml-0 md:justify-self-end">
+                <a href="#" className="hidden text-xs font-semibold md:block">
+                  <div className="mx-auto mb-1 flex h-9 w-9 items-center justify-center">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="h-8 w-8">
+                      <path d="M12 3 3 8.2v7.6L12 21l9-5.2V8.2L12 3Z" />
+                      <path d="M12 21V11.5" />
+                    </svg>
+                  </div>
+                  Ayuda
+                </a>
+                <a href="#" className="hidden text-xs font-semibold md:block">
+                  <div className="mx-auto mb-1 flex h-9 w-9 items-center justify-center">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="h-8 w-8">
+                      <circle cx="12" cy="8" r="4" />
+                      <path d="M4 21c1.8-4 5-6 8-6s6.2 2 8 6" />
+                    </svg>
+                  </div>
+                  Mi cuenta
+                </a>
+                <a href="#" className="relative text-xs font-semibold">
+                  <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#e4077d] px-1 text-[10px] font-bold text-white">
+                    0
+                  </span>
+                  <div className="mx-auto mb-1 flex h-9 w-9 items-center justify-center">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="h-8 w-8">
+                      <circle cx="9" cy="20" r="1.4" />
+                      <circle cx="18" cy="20" r="1.4" />
+                      <path d="M3 4h2l2.2 10.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.5L21 8H7" />
+                    </svg>
+                  </div>
+                  Mi carrito
+                </a>
+              </div>
             </div>
           </div>
         </div>
 
         <nav className="border-t border-white/35 bg-[#029f9c]">
-          <div className="flex w-full flex-wrap items-center justify-center gap-x-8 gap-y-2 px-4 py-2.5 text-[15px] font-semibold text-white md:px-6">
+          <div className="mx-auto grid w-full max-w-[1500px] md:grid-cols-[130px_minmax(560px,760px)_260px] md:translate-x-6">
+            <div />
+            <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 py-2.5 text-[15px] font-semibold text-white">
             <a href="#" className="inline-flex items-center gap-1 transition-colors hover:text-[#f6d4ea]">
               Accesorios
               <span className="text-[10px]">▼</span>
@@ -164,6 +168,8 @@ export default function Home() {
             <a href="#" className="transition-colors hover:text-[#f6d4ea]">
               Contacto
             </a>
+            </div>
+            <div />
           </div>
         </nav>
       </header>
