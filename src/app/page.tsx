@@ -37,97 +37,131 @@ const products = [
 export default function Home() {
   return (
     <main className="min-h-screen bg-[#f8f8f8] text-[#3f3f3f]">
-      <div className="bg-[#e4077d] px-4 py-2 text-center text-xs font-semibold tracking-wide text-white">
-        Envio gratis en compras seleccionadas
-      </div>
-
-      <header className="sticky top-0 z-20 border-b border-[#e5e5e5] bg-white/95 backdrop-blur">
-        <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-[#9a9a9a] md:px-6">
-          <p>Don Paco Pet Shop - Rio Negro</p>
-          <p className="hidden sm:block">Atencion personalizada y envios</p>
-        </div>
-
-        <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center gap-3 px-4 py-3 md:flex-nowrap md:gap-5 md:px-6">
-          <a href="/" className="shrink-0">
-            <Image
-              src="/logo.png"
-              alt="Logo Don Paco"
-              width={118}
-              height={118}
-              priority
-            />
-          </a>
-
-          <form className="order-3 w-full md:order-none md:flex-1" role="search">
-            <label htmlFor="search-products" className="sr-only">
-              Buscar producto
-            </label>
-            <div className="flex items-center overflow-hidden rounded-full border border-[#d9d9d9] bg-white focus-within:border-[#029f9c]">
-              <input
-                id="search-products"
-                name="search"
-                type="search"
-                placeholder="Buscar productos, camas, colchonetas..."
-                className="w-full px-4 py-2.5 text-sm text-[#555] outline-none placeholder:text-[#aaaaaa]"
-              />
-              <button
-                type="submit"
-                aria-label="Buscar"
-                className="h-full px-4 py-2.5 text-[#029f9c] transition-colors hover:text-[#e4077d]"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.2"
-                  className="h-6 w-6"
-                >
-                  <circle cx="11" cy="11" r="7" />
-                  <path d="m20 20-3.5-3.5" />
+      <header className="sticky top-0 z-20 shadow-sm">
+        <div className="bg-[#e4077d]">
+          <div className="grid w-full grid-cols-[1fr_auto_1fr] items-center px-3 py-1.5 md:px-4">
+            <div className="flex items-center gap-2 text-white">
+              <a href="#" aria-label="Facebook" className="opacity-90 transition-opacity hover:opacity-100">
+                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 fill-current">
+                  <path d="M13.6 8.5V7.1c0-.7.5-.9.8-.9h2.1V3h-2.9c-3.2 0-3.9 2.4-3.9 4v1.5H7.8v3.5h1.9V21h3.9v-9h2.6l.4-3.5h-3z" />
                 </svg>
-              </button>
+              </a>
+              <a href="#" aria-label="Instagram" className="opacity-90 transition-opacity hover:opacity-100">
+                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 fill-current">
+                  <path d="M12 7.3A4.7 4.7 0 1 0 12 16.7 4.7 4.7 0 0 0 12 7.3Zm0 7.8A3.1 3.1 0 1 1 12 8.9a3.1 3.1 0 0 1 0 6.2Zm6-7.9a1.1 1.1 0 1 1-2.1 0 1.1 1.1 0 0 1 2.1 0Z" />
+                  <path d="M12 2.2h4.1c3.2 0 5.7 2.5 5.7 5.7V16c0 3.2-2.5 5.7-5.7 5.7H7.9A5.7 5.7 0 0 1 2.2 16V7.9c0-3.2 2.5-5.7 5.7-5.7H12Zm0 1.6H7.9a4.1 4.1 0 0 0-4.1 4.1V16A4.1 4.1 0 0 0 7.9 20h8.2a4.1 4.1 0 0 0 4.1-4.1V7.9a4.1 4.1 0 0 0-4.1-4.1H12Z" />
+                </svg>
+              </a>
+              <a href="#" aria-label="TikTok" className="opacity-90 transition-opacity hover:opacity-100">
+                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 fill-current">
+                  <path d="M14.8 3v9.4a3.4 3.4 0 1 1-2.4-3.2V6.8a6.7 6.7 0 1 0 4.8 6.4V8.8a6.7 6.7 0 0 0 3.9 1.3V7.7a4.3 4.3 0 0 1-4-4.7h-2.3Z" />
+                </svg>
+              </a>
             </div>
-          </form>
-
-          <div className="ml-auto flex items-center gap-2">
-            <button
-              type="button"
-              className="inline-flex items-center gap-2 rounded-full bg-[#e4077d] px-4 py-2 text-[11px] font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#c5066b]"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.2"
-                className="h-4 w-4"
-                aria-hidden="true"
-              >
-                <circle cx="9" cy="20" r="1.5" />
-                <circle cx="18" cy="20" r="1.5" />
-                <path d="M3 4h2l2.2 10.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.5L21 8H7" />
-              </svg>
-              Mi carrito (0)
-            </button>
+            <p className="whitespace-nowrap text-center text-[10px] font-semibold uppercase tracking-widest text-white md:text-[11px]">
+              Descuento adicional: 10% en efectivo o 5 % transferencias
+            </p>
+            <div />
           </div>
         </div>
 
-        <nav className="border-t border-[#ececec] bg-white">
-          <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-center gap-x-8 gap-y-2 px-4 py-3 text-sm font-bold uppercase tracking-wider text-[#8d8d8d] md:px-6">
-            <a href="#" className="transition-colors hover:text-[#029f9c]">
-              Productos
+        <div className="bg-[#029f9c] text-white">
+          <div className="flex w-full flex-wrap items-center gap-3 px-2 py-3 md:flex-nowrap md:gap-10 md:px-4">
+            <a href="/" className="shrink-0">
+              <Image
+                src="/logo.png"
+                alt="Logo Don Paco"
+                width={86}
+                height={86}
+                priority
+              />
             </a>
-            <a href="#" className="transition-colors hover:text-[#029f9c]">
-              Perros
+
+            <form className="order-3 w-full md:order-none md:flex-1" role="search">
+              <label htmlFor="search-products" className="sr-only">
+                Buscar producto
+              </label>
+              <div className="flex items-center overflow-hidden rounded-md bg-white">
+                <input
+                  id="search-products"
+                  name="search"
+                  type="search"
+                  placeholder="¿Qué estás buscando?"
+                  className="w-full px-4 py-3 text-sm text-[#555] outline-none placeholder:text-[#9f9f9f]"
+                />
+                <button
+                  type="submit"
+                  aria-label="Buscar"
+                  className="border-l border-[#ededed] px-3 py-3 text-[#3f3f3f] transition-colors hover:text-[#029f9c]"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                    className="h-5 w-5"
+                  >
+                    <circle cx="11" cy="11" r="7" />
+                    <path d="m20 20-3.5-3.5" />
+                  </svg>
+                </button>
+              </div>
+            </form>
+
+            <div className="ml-auto flex items-center gap-10 text-center">
+              <a href="#" className="hidden text-xs font-semibold md:block">
+                <div className="mx-auto mb-1 flex h-9 w-9 items-center justify-center">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="h-8 w-8">
+                    <path d="M12 3 3 8.2v7.6L12 21l9-5.2V8.2L12 3Z" />
+                    <path d="M12 21V11.5" />
+                  </svg>
+                </div>
+                Ayuda
+              </a>
+              <a href="#" className="hidden text-xs font-semibold md:block">
+                <div className="mx-auto mb-1 flex h-9 w-9 items-center justify-center">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="h-8 w-8">
+                    <circle cx="12" cy="8" r="4" />
+                    <path d="M4 21c1.8-4 5-6 8-6s6.2 2 8 6" />
+                  </svg>
+                </div>
+                Mi cuenta
+              </a>
+              <a href="#" className="relative text-xs font-semibold">
+                <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#e4077d] px-1 text-[10px] font-bold text-white">
+                  0
+                </span>
+                <div className="mx-auto mb-1 flex h-9 w-9 items-center justify-center">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="h-8 w-8">
+                    <circle cx="9" cy="20" r="1.4" />
+                    <circle cx="18" cy="20" r="1.4" />
+                    <path d="M3 4h2l2.2 10.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.5L21 8H7" />
+                  </svg>
+                </div>
+                Mi carrito
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <nav className="border-t border-white/35 bg-[#029f9c]">
+          <div className="flex w-full flex-wrap items-center justify-center gap-x-8 gap-y-2 px-4 py-2.5 text-[15px] font-semibold text-white md:px-6">
+            <a href="#" className="inline-flex items-center gap-1 transition-colors hover:text-[#f6d4ea]">
+              Accesorios
+              <span className="text-[10px]">▼</span>
             </a>
-            <a href="#" className="transition-colors hover:text-[#029f9c]">
-              Gatos
+            <a href="#" className="inline-flex items-center gap-1 transition-colors hover:text-[#f6d4ea]">
+              Alimentos
+              <span className="text-[10px]">▼</span>
             </a>
-            <a href="#" className="transition-colors hover:text-[#029f9c]">
-              Ofertas
+            <a href="#" className="transition-colors hover:text-[#f6d4ea]">
+              Outlet
             </a>
-            <a href="#" className="transition-colors hover:text-[#029f9c]">
+            <a href="#" className="transition-colors hover:text-[#f6d4ea]">
+              Preguntas frecuentes
+            </a>
+            <a href="#" className="transition-colors hover:text-[#f6d4ea]">
               Contacto
             </a>
           </div>
