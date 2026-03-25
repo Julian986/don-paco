@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useCart } from "@/components/cart-provider";
+import PawIcon from "@/components/paw-icon";
 import { formatArs } from "@/lib/products";
 
 export default function HeaderCart() {
@@ -40,14 +41,14 @@ export default function HeaderCart() {
         <span className="absolute -right-2.5 -top-2.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#e4077d] px-1.5 text-[11px] font-black text-white">
           {totalQuantity}
         </span>
-        <div className="mx-auto mb-1 flex h-9 w-9 items-center justify-center">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="h-8 w-8">
+        <div className="mx-auto mb-0.5 flex h-8 w-8 items-center justify-center md:mb-1 md:h-9 md:w-9">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="h-7 w-7 md:h-8 md:w-8">
             <circle cx="9" cy="20" r="1.4" />
             <circle cx="18" cy="20" r="1.4" />
             <path d="M3 4h2l2.2 10.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.5L21 8H7" />
           </svg>
         </div>
-        Mi carrito
+        <span className="hidden md:inline">Mi carrito</span>
       </button>
 
       <div
@@ -102,8 +103,8 @@ export default function HeaderCart() {
                       key={item.slug}
                       className="grid grid-cols-[78px_1fr] items-stretch gap-3 rounded-xl border border-[#e5e5e5] bg-[#fafafa] p-3"
                     >
-                      <div className="flex h-full min-h-[108px] items-center justify-center rounded-lg border border-[#dfdfdf] bg-white text-3xl">
-                        🐾
+                      <div className="flex h-full min-h-[108px] items-center justify-center rounded-lg border border-[#dfdfdf] bg-white">
+                        <PawIcon className="h-10 w-10 text-[#029f9c]" />
                       </div>
 
                       <div className="grid min-h-[108px] grid-rows-[auto_auto_1fr]">

@@ -1,13 +1,34 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import HeaderCart from "@/components/header-cart";
+import HeaderMenu from "@/components/header-menu";
+import PawIcon from "@/components/paw-icon";
 
 export default function SiteHeader() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = originalOverflow;
+    }
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [isMobileMenuOpen]);
+
   return (
     <header className="sticky top-0 z-20 shadow-sm">
       <div className="bg-[#e4077d]">
-        <div className="grid w-full grid-cols-[1fr_auto_1fr] items-center px-3 py-1.5 md:px-4 md:pl-28">
-          <div className="flex items-center gap-2 text-white">
+        <div className="grid w-full grid-cols-1 items-center px-3 py-1.5 md:grid-cols-[1fr_auto_1fr] md:px-4 md:pl-28">
+          <div className="hidden items-center gap-2 text-white md:flex">
             <a href="#" aria-label="Facebook" className="opacity-90 transition-opacity hover:opacity-100">
               <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 fill-current">
                 <path d="M13.6 8.5V7.1c0-.7.5-.9.8-.9h2.1V3h-2.9c-3.2 0-3.9 2.4-3.9 4v1.5H7.8v3.5h1.9V21h3.9v-9h2.6l.4-3.5h-3z" />
@@ -25,21 +46,43 @@ export default function SiteHeader() {
               </svg>
             </a>
           </div>
-          <p className="whitespace-nowrap text-center text-[10px] font-semibold uppercase tracking-widest text-white md:text-[11px]">
+          <p className="text-center text-[9px] font-semibold uppercase tracking-wide text-white md:whitespace-nowrap md:text-[11px] md:tracking-widest">
             Descuento adicional: 10% en efectivo o 5 % transferencias
           </p>
-          <div />
+          <div className="hidden md:block" />
         </div>
       </div>
 
       <div className="bg-[#029f9c] text-white">
         <div className="mx-auto w-full max-w-[1500px] px-2 py-3 md:px-4 md:pl-28">
-          <div className="grid items-center gap-3 md:grid-cols-[130px_minmax(560px,760px)_260px] md:gap-8">
-            <Link href="/" className="shrink-0 justify-self-start">
-              <Image src="/logo.png" alt="Logo Don Paco" width={86} height={86} priority />
+          <div className="flex items-center justify-between gap-2 md:grid md:grid-cols-[130px_minmax(560px,760px)_260px] md:gap-8">
+            <button
+              type="button"
+              onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-white/25 text-white transition-colors hover:bg-white/10 md:hidden"
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-main-menu"
+              aria-label="Abrir o cerrar menu"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="h-5 w-5">
+                {isMobileMenuOpen ? <path d="m18 6-12 12M6 6l12 12" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
+              </svg>
+            </button>
+
+            <Link href="/" className="inline-flex items-center gap-1.5 md:hidden">
+              <PawIcon className="h-6 w-6 text-[#029f9c]" />
+              <span className="text-lg font-black uppercase tracking-wide text-white">Don Paco</span>
             </Link>
 
-            <form className="order-3 w-full md:order-none md:justify-self-center" role="search">
+            <div className="md:hidden">
+              <HeaderCart />
+            </div>
+
+            <Link href="/" className="hidden shrink-0 justify-self-start md:block">
+              <Image src="/logo.png" alt="Logo Don Paco" width={72} height={72} priority />
+            </Link>
+
+            <form className="order-3 hidden w-full md:order-none md:block md:justify-self-center" role="search">
               <label htmlFor="search-products" className="sr-only">
                 Buscar producto
               </label>
@@ -71,7 +114,7 @@ export default function SiteHeader() {
               </div>
             </form>
 
-            <div className="ml-auto flex items-center gap-11 text-center md:ml-0 md:justify-self-end">
+            <div className="ml-auto hidden items-center gap-11 text-center md:ml-0 md:flex md:justify-self-end">
               <a href="#" className="hidden text-xs font-semibold md:block">
                 <div className="mx-auto mb-1 flex h-9 w-9 items-center justify-center">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="h-8 w-8">
@@ -96,29 +139,7 @@ export default function SiteHeader() {
         </div>
       </div>
 
-      <nav className="border-t border-white/35 bg-[#029f9c]">
-        <div className="mx-auto w-full max-w-7xl px-4 md:px-6 md:pl-28">
-          <div className="flex flex-wrap items-center justify-start gap-x-8 gap-y-2 py-2.5 text-[17px] font-medium text-white lg:pl-[284px]">
-            <a href="#" className="inline-flex items-center gap-1 transition-colors hover:text-[#f6d4ea]">
-              Accesorios
-              <span className="text-[12px]">▼</span>
-            </a>
-            <a href="#" className="inline-flex items-center gap-1 transition-colors hover:text-[#f6d4ea]">
-              Alimentos
-              <span className="text-[12px]">▼</span>
-            </a>
-            <a href="#" className="transition-colors hover:text-[#f6d4ea]">
-              Outlet
-            </a>
-            <a href="#" className="transition-colors hover:text-[#f6d4ea]">
-              Preguntas frecuentes
-            </a>
-            <a href="#" className="transition-colors hover:text-[#f6d4ea]">
-              Contacto
-            </a>
-          </div>
-        </div>
-      </nav>
+      <HeaderMenu isMobileOpen={isMobileMenuOpen} onRequestClose={() => setIsMobileMenuOpen(false)} />
     </header>
   );
 }

@@ -1,3 +1,5 @@
+import PawIcon from "@/components/paw-icon";
+
 const footerColumns = [
   {
     title: "Tienda",
@@ -23,7 +25,7 @@ export default function SiteFooter() {
       <div className="mx-auto grid w-full max-w-7xl gap-10 px-6 py-16 md:grid-cols-[1.5fr_1fr_1fr_1fr_1fr] md:gap-8">
         <div>
           <div className="mb-6 inline-flex items-center gap-2">
-            <span className="text-3xl leading-none text-[#029f9c]">🐾</span>
+            <PawIcon className="h-8 w-8 text-[#029f9c]" />
             <span className="text-lg font-black uppercase tracking-wide text-[#4c4c4c]">Don Paco</span>
           </div>
           <p className="mb-8 max-w-xs text-[15px] leading-7 text-[#6a6a6a]">
