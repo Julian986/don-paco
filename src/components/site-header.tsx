@@ -1,32 +1,43 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import HeaderCart from "@/components/header-cart";
 import HeaderMenu from "@/components/header-menu";
 import PawIcon from "@/components/paw-icon";
+import { lockBodyScroll, unlockBodyScroll } from "@/lib/body-scroll-lock";
 
 export default function SiteHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showDesktopLogo, setShowDesktopLogo] = useState(false);
+  const [isDesktopViewport, setIsDesktopViewport] = useState(false);
 
   useEffect(() => {
-    const originalOverflow = document.body.style.overflow;
+    const mediaQuery = window.matchMedia("(min-width: 768px)");
+    const updateViewport = () => setIsDesktopViewport(mediaQuery.matches);
 
+    updateViewport();
+    mediaQuery.addEventListener("change", updateViewport);
+    return () => mediaQuery.removeEventListener("change", updateViewport);
+  }, []);
+
+  useEffect(() => {
     if (isMobileMenuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = originalOverflow;
+      lockBodyScroll();
     }
 
     return () => {
-      document.body.style.overflow = originalOverflow;
+      if (isMobileMenuOpen) {
+        unlockBodyScroll();
+      }
     };
   }, [isMobileMenuOpen]);
 
   return (
     <header className="sticky top-0 z-20 shadow-sm">
       <div className="bg-[#e4077d]">
-        <div className="grid w-full grid-cols-1 items-center px-3 py-1.5 md:grid-cols-[1fr_auto_1fr] md:px-4 md:pl-28">
+        <div className="grid w-full grid-cols-1 items-center px-3 py-1.5 md:grid-cols-[1fr_auto_1fr] md:px-4 md:pl-16 min-[1810px]:md:pl-28">
           <div className="hidden items-center gap-2 text-white md:flex">
             <a href="#" aria-label="Facebook" className="opacity-90 transition-opacity hover:opacity-100">
               <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 fill-current">
@@ -41,7 +52,7 @@ export default function SiteHeader() {
             </a>
             <a href="#" aria-label="TikTok" className="opacity-90 transition-opacity hover:opacity-100">
               <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 fill-current">
-                <path d="M14.8 3v9.4a3.4 3.4 0 1 1-2.4-3.2V6.8a6.7 6.7 0 1 0 4.8 6.4V8.8a6.7 6.7 0 0 0 3.9 1.3V7.7a4.3 4.3 0 0 1-4-4.7h-2.3Z" />
+                <path d="M17.53 4.53a4.9 4.9 0 0 1-2.88-1.72V2h-2.9v11.02a2.97 2.97 0 1 1-2.97-2.97c.21 0 .41.02.61.06V7.18a5.86 5.86 0 1 0 5.26 5.84V7.86c.9.4 1.88.6 2.88.6V4.53Z" />
               </svg>
             </a>
           </div>
@@ -53,8 +64,8 @@ export default function SiteHeader() {
       </div>
 
       <div className="bg-[#029f9c] text-white">
-        <div className="mx-auto w-full max-w-[1500px] px-2 py-3 md:px-4 md:pl-28">
-          <div className="flex items-center justify-between gap-2 md:grid md:grid-cols-[130px_minmax(560px,760px)_260px] md:gap-8">
+        <div className="mx-auto w-full max-w-[1500px] px-2 py-3 md:px-4 md:pl-16 min-[1810px]:md:pl-28">
+          <div className="flex items-center justify-between gap-2 md:grid md:grid-cols-[auto_minmax(0,1fr)_auto] md:gap-4 min-[1810px]:md:grid-cols-[130px_minmax(560px,760px)_260px] min-[1810px]:md:gap-8">
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen((prev) => !prev)}
@@ -73,16 +84,42 @@ export default function SiteHeader() {
               <span className="text-lg font-black uppercase tracking-wide text-white">PET´S SHOP</span>
             </Link>
 
-            <div className="md:hidden">
-              <HeaderCart />
-            </div>
+            {!isDesktopViewport ? (
+              <div className="md:hidden">
+                <HeaderCart />
+              </div>
+            ) : null}
 
-            <Link href="/" className="hidden items-center gap-2 justify-self-start md:inline-flex">
-              <PawIcon className="h-7 w-7 text-white" />
-              <span className="text-xl font-black uppercase tracking-wide text-white">PET´S SHOP</span>
-            </Link>
+            <button
+              type="button"
+              onClick={() => setShowDesktopLogo((previous) => !previous)}
+              className="hidden shrink-0 items-center justify-self-start md:inline-flex"
+              aria-label="Alternar entre marca y logo"
+              title="Alternar logo"
+            >
+              {showDesktopLogo ? (
+                <Image
+                  src="/logo.png"
+                  alt="Don Paco logo"
+                  width={230}
+                  height={76}
+                  className="h-12 w-auto origin-left scale-110 object-contain min-[1810px]:scale-125"
+                  priority
+                />
+              ) : (
+                <span className="inline-flex items-center gap-2">
+                  <PawIcon className="h-7 w-7 text-white" />
+                  <span className="text-lg font-black uppercase tracking-wide text-white min-[1810px]:text-xl">
+                    PET´S SHOP
+                  </span>
+                </span>
+              )}
+            </button>
 
-            <form className="order-3 hidden w-full md:order-none md:block md:justify-self-center" role="search">
+            <form
+              className="order-3 hidden w-full md:order-none md:block md:w-full md:max-w-[560px] md:justify-self-center min-[1810px]:md:max-w-[760px]"
+              role="search"
+            >
               <label htmlFor="search-products" className="sr-only">
                 Buscar producto
               </label>
@@ -114,7 +151,7 @@ export default function SiteHeader() {
               </div>
             </form>
 
-            <div className="ml-auto hidden items-center gap-11 text-center md:ml-0 md:flex md:justify-self-end">
+            <div className="hidden shrink-0 items-center gap-4 text-center md:flex md:justify-self-end min-[1100px]:gap-8">
               <a href="#" className="hidden text-xs font-semibold md:block">
                 <div className="mx-auto mb-1 flex h-9 w-9 items-center justify-center">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="h-8 w-8">
@@ -122,18 +159,9 @@ export default function SiteHeader() {
                     <path d="M12 21V11.5" />
                   </svg>
                 </div>
-                Ayuda
+                <span className="hidden min-[1100px]:inline">Ayuda</span>
               </a>
-              <a href="#" className="hidden text-xs font-semibold md:block">
-                <div className="mx-auto mb-1 flex h-9 w-9 items-center justify-center">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="h-8 w-8">
-                    <circle cx="12" cy="8" r="4" />
-                    <path d="M4 21c1.8-4 5-6 8-6s6.2 2 8 6" />
-                  </svg>
-                </div>
-                Mi cuenta
-              </a>
-              <HeaderCart />
+              {isDesktopViewport ? <HeaderCart /> : null}
             </div>
           </div>
         </div>

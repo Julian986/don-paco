@@ -2,19 +2,20 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCart } from "@/components/cart-provider";
 import PawIcon from "@/components/paw-icon";
+import { lockBodyScroll, unlockBodyScroll } from "@/lib/body-scroll-lock";
 import { formatArs } from "@/lib/products";
 
 export default function HeaderCart() {
   const [isOpen, setIsOpen] = useState(false);
   const { items, totalQuantity, subtotal, updateQuantity, removeItem } = useCart();
+  const router = useRouter();
 
   useEffect(() => {
-    const originalOverflow = document.body.style.overflow;
-
     if (isOpen) {
-      document.body.style.overflow = "hidden";
+      lockBodyScroll();
     }
 
     const onEscape = (event: KeyboardEvent) => {
@@ -23,11 +24,17 @@ export default function HeaderCart() {
       }
     };
 
+    const onOpenCart = () => setIsOpen(true);
+
     window.addEventListener("keydown", onEscape);
+    window.addEventListener("open-cart", onOpenCart);
 
     return () => {
-      document.body.style.overflow = originalOverflow;
+      if (isOpen) {
+        unlockBodyScroll();
+      }
       window.removeEventListener("keydown", onEscape);
+      window.removeEventListener("open-cart", onOpenCart);
     };
   }, [isOpen]);
 
@@ -48,7 +55,7 @@ export default function HeaderCart() {
             <path d="M3 4h2l2.2 10.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.5L21 8H7" />
           </svg>
         </div>
-        <span className="hidden md:inline">Mi carrito</span>
+        <span className="hidden min-[1100px]:inline">Mi carrito</span>
       </button>
 
       <div
@@ -184,6 +191,10 @@ export default function HeaderCart() {
               <div className="space-y-2">
                 <button
                   type="button"
+                  onClick={() => {
+                    setIsOpen(false);
+                    router.push("/checkout");
+                  }}
                   className="w-full rounded-md bg-[#029f9c] px-4 py-3 text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#028886]"
                 >
                   Finalizar compra

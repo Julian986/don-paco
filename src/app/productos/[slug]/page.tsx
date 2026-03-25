@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import PawIcon from "@/components/paw-icon";
+import ProductDetailActions from "@/components/product-detail-actions";
 import SiteFooter from "@/components/site-footer";
 import SiteHeader from "@/components/site-header";
 import { formatArs, getProductBySlug, products } from "@/lib/products";
@@ -90,59 +91,13 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
               </p>
             </div>
 
-            <div className="mb-5">
-              <p className="mb-2 text-xs font-bold uppercase tracking-wider text-[#8a8a8a]">Color</p>
-              <div className="flex flex-wrap gap-2">
-                {product.colors.map((color) => (
-                  <button
-                    key={color}
-                    type="button"
-                    className="rounded-full border border-[#d8d8d8] px-3 py-1.5 text-sm text-[#666] transition-colors hover:border-[#029f9c] hover:text-[#029f9c]"
-                  >
-                    {color}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="mb-8">
-              <p className="mb-2 text-xs font-bold uppercase tracking-wider text-[#8a8a8a]">Tamaño</p>
-              <div className="flex flex-wrap gap-2">
-                {product.sizes.map((size) => (
-                  <button
-                    key={size}
-                    type="button"
-                    className="rounded-md border border-[#d8d8d8] px-3 py-1.5 text-sm font-medium text-[#666] transition-colors hover:border-[#029f9c] hover:text-[#029f9c]"
-                  >
-                    {size}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center">
-              <div className="flex items-center rounded-md border border-[#d8d8d8]">
-                <button type="button" className="px-3 py-2 text-lg text-[#7a7a7a]">
-                  -
-                </button>
-                <span className="px-4 py-2 text-sm font-semibold">1</span>
-                <button type="button" className="px-3 py-2 text-lg text-[#7a7a7a]">
-                  +
-                </button>
-              </div>
-              <button
-                type="button"
-                className="w-full rounded-md bg-[#029f9c] px-4 py-3 text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#028886] sm:flex-1"
-              >
-                Agregar al carrito
-              </button>
-              <button
-                type="button"
-                className="w-full rounded-md border border-[#e4077d] px-4 py-3 text-sm font-bold uppercase tracking-wide text-[#e4077d] transition-colors hover:bg-[#e4077d] hover:text-white sm:w-auto"
-              >
-                Comprar ahora
-              </button>
-            </div>
+            <ProductDetailActions
+              slug={product.slug}
+              name={product.name}
+              price={product.price}
+              colors={product.colors}
+              sizes={product.sizes}
+            />
 
             <div className="grid gap-3 text-sm text-[#666] sm:grid-cols-2">
               <div className="rounded-lg border border-[#e4e4e4] bg-[#fafafa] p-3">

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 type MenuItem = {
   label: string;
@@ -28,7 +29,7 @@ const menuItems: MenuItem[] = [
     ],
   },
   { label: "Outlet", href: "#" },
-  { label: "Preguntas frecuentes", href: "#" },
+  { label: "Preguntas frecuentes", href: "/preguntas-frecuentes" },
   { label: "Contacto", href: "#" },
 ];
 
@@ -137,6 +138,14 @@ export default function HeaderMenu({ isMobileOpen, onRequestClose }: HeaderMenuP
                           ▼
                         </span>
                       </button>
+                    ) : item.href?.startsWith("/") ? (
+                      <Link
+                        href={item.href}
+                        onClick={onRequestClose}
+                        className="flex items-center justify-between rounded-md px-2.5 py-3 text-base font-medium text-white/95 transition-colors hover:bg-white/10 hover:text-[#f6d4ea]"
+                      >
+                        <span>{item.label}</span>
+                      </Link>
                     ) : (
                       <a
                         href={item.href ?? "#"}
@@ -170,18 +179,27 @@ export default function HeaderMenu({ isMobileOpen, onRequestClose }: HeaderMenuP
       </div>
 
       <nav className="relative z-40 border-t border-white/35 bg-[#029f9c]">
-        <div className="mx-auto w-full max-w-7xl px-3 md:px-6 md:pl-28">
-          <div className="hidden no-scrollbar overflow-x-auto lg:pl-[284px] md:block">
+        <div className="mx-auto w-full max-w-7xl px-3 md:px-6 md:pl-16 min-[1810px]:md:pl-28">
+          <div className="hidden no-scrollbar overflow-x-auto md:block min-[1810px]:lg:pl-[284px]">
             <div className="flex min-w-max items-center gap-x-7 py-2.5 text-[17px] font-medium text-white">
               {menuItems.map((item) => (
                 <div key={item.label} className="relative group/menu">
-                  <a
-                    href={item.href ?? "#"}
-                    className="inline-flex items-center gap-1 transition-colors hover:text-[#f6d4ea]"
-                  >
-                    {item.label}
-                    {item.children ? <span className="text-[12px]">▼</span> : null}
-                  </a>
+                  {item.href?.startsWith("/") && !item.children ? (
+                    <Link
+                      href={item.href}
+                      className="inline-flex items-center gap-1 transition-colors hover:text-[#f6d4ea]"
+                    >
+                      {item.label}
+                    </Link>
+                  ) : (
+                    <a
+                      href={item.href ?? "#"}
+                      className="inline-flex items-center gap-1 transition-colors hover:text-[#f6d4ea]"
+                    >
+                      {item.label}
+                      {item.children ? <span className="text-[12px]">▼</span> : null}
+                    </a>
+                  )}
 
                   {item.children ? (
                     <div className="invisible absolute left-0 top-[calc(100%+10px)] z-20 w-56 rounded-lg border border-[#d8d8d8] bg-white p-2 opacity-0 shadow-lg transition-all group-hover/menu:visible group-hover/menu:opacity-100">

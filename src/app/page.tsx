@@ -1,17 +1,14 @@
-import Image from "next/image";
+"use client";
+
+import { useMemo, useState } from "react";
+import MobileFilterSort from "@/components/mobile-filter-sort";
 import PawIcon from "@/components/paw-icon";
 import ProductCard from "@/components/product-card";
 import SiteHeader from "@/components/site-header";
 import SortDropdown from "@/components/sort-dropdown";
 import { products } from "@/lib/products";
 
-const categoryLinks = [
-  "Contacto",
-  "Moises",
-  "Colchonetas",
-  "Mantas",
-  "Catres",
-];
+const categoryLinks = ["Moises", "Colchonetas", "Mantas", "Catres"];
 
 const filterGroups = [
   {
@@ -48,6 +45,13 @@ const footerColumns = [
 ];
 
 export default function Home() {
+  const [selectedCategory, setSelectedCategory] = useState<string>("Todas");
+
+  const filteredProducts = useMemo(() => {
+    if (selectedCategory === "Todas") return products;
+    return products.filter((product) => product.category === selectedCategory);
+  }, [selectedCategory]);
+
   return (
     <main className="min-h-screen bg-white text-[#3f3f3f]">
       <SiteHeader />
@@ -65,20 +69,50 @@ export default function Home() {
               </span>
             </h1>
           </div>
-          <SortDropdown />
+          <div className="hidden lg:block">
+            <SortDropdown />
+          </div>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
-          <aside className="order-2 h-fit rounded-xl border border-[#e6e6e6] bg-white p-5 lg:order-1">
+        <MobileFilterSort
+          categoryLinks={categoryLinks}
+          filterGroups={filterGroups}
+          selectedCategory={selectedCategory}
+          onChangeCategory={setSelectedCategory}
+        />
+
+        <div className="grid gap-6 lg:items-start lg:grid-cols-[260px_1fr]">
+          <aside className="hidden h-fit rounded-xl border border-[#e6e6e6] bg-white p-5 lg:block">
             <h2 className="mb-4 text-sm font-extrabold uppercase tracking-widest text-[#029f9c]">
               Categorias
             </h2>
             <ul className="mb-6 space-y-2 text-base md:text-[18px]">
+              <li>
+                <button
+                  type="button"
+                  onClick={() => setSelectedCategory("Todas")}
+                  className={`cursor-pointer text-left transition-colors ${
+                    selectedCategory === "Todas"
+                      ? "font-semibold text-[#029f9c]"
+                      : "text-[#666] hover:text-[#e4077d]"
+                  }`}
+                >
+                  Todas
+                </button>
+              </li>
               {categoryLinks.map((item) => (
                 <li key={item}>
-                  <a href="#" className="text-[#666] transition-colors hover:text-[#e4077d]">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedCategory(item)}
+                    className={`cursor-pointer text-left transition-colors ${
+                      selectedCategory === item
+                        ? "font-semibold text-[#029f9c]"
+                        : "text-[#666] hover:text-[#e4077d]"
+                    }`}
+                  >
                     {item}
-                  </a>
+                  </button>
                 </li>
               ))}
             </ul>
@@ -95,8 +129,8 @@ export default function Home() {
                   <ul className="space-y-1.5 text-base text-[#666] md:text-[17px]">
                     {group.options.map((option) => (
                       <li key={option}>
-                        <label className="flex items-center gap-2">
-                          <input type="checkbox" className="accent-[#029f9c]" />
+                        <label className="flex cursor-pointer items-center gap-2">
+                          <input type="checkbox" className="cursor-pointer accent-[#029f9c]" />
                           <span>{option}</span>
                         </label>
                       </li>
@@ -107,8 +141,8 @@ export default function Home() {
             </div>
           </aside>
 
-          <div className="order-1 grid grid-cols-2 gap-3 sm:gap-5 xl:grid-cols-3 lg:order-2">
-            {products.map((product) => (
+          <div className="order-1 grid grid-cols-2 gap-3 sm:gap-5 2xl:grid-cols-3 lg:order-2">
+            {filteredProducts.map((product) => (
               <ProductCard key={product.slug} product={product} />
             ))}
           </div>

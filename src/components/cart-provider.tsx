@@ -22,6 +22,7 @@ type AddCartItemInput = {
   slug: string;
   name: string;
   price: number;
+  quantity?: number;
 };
 
 type CartContextValue = {
@@ -71,18 +72,27 @@ export default function CartProvider({ children }: { children: ReactNode }) {
 
   const addItem = useCallback(
     (item: AddCartItemInput) => {
+      const quantityToAdd = Math.max(1, item.quantity ?? 1);
+
       setItems((previousItems) => {
         const existingItem = previousItems.find((cartItem) => cartItem.slug === item.slug);
         if (existingItem) {
           return previousItems.map((cartItem) =>
             cartItem.slug === item.slug
-              ? { ...cartItem, quantity: cartItem.quantity + 1 }
+              ? { ...cartItem, quantity: cartItem.quantity + quantityToAdd }
               : cartItem,
           );
         }
-        return [...previousItems, { ...item, quantity: 1 }];
+        return [
+          ...previousItems,
+          { slug: item.slug, name: item.name, price: item.price, quantity: quantityToAdd },
+        ];
       });
-      showToast(`${item.name} se agrego al carrito`);
+      showToast(
+        quantityToAdd > 1
+          ? `${item.name} x${quantityToAdd} se agrego al carrito`
+          : `${item.name} se agrego al carrito`,
+      );
     },
     [showToast],
   );

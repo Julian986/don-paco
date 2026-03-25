@@ -56,7 +56,7 @@ export default function SortDropdown() {
   }, [isOpen]);
 
   return (
-    <div ref={containerRef} className="relative w-full max-w-[300px]">
+    <div ref={containerRef} className="relative w-[360px] max-w-full">
       <p className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[#9a9a9a]">
         Ordenar por
       </p>
