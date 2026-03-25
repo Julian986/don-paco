@@ -38,7 +38,7 @@ export default function HeaderCart() {
         onClick={() => setIsOpen(true)}
         className="relative text-xs font-semibold transition-opacity hover:opacity-90"
       >
-        <span className="absolute -right-2.5 -top-2.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#e4077d] px-1.5 text-[11px] font-black text-white">
+        <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#e4077d] px-1.5 text-[11px] font-black text-white">
           {totalQuantity}
         </span>
         <div className="mx-auto mb-0.5 flex h-8 w-8 items-center justify-center md:mb-1 md:h-9 md:w-9">

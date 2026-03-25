@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import HeaderCart from "@/components/header-cart";
@@ -71,15 +70,16 @@ export default function SiteHeader() {
 
             <Link href="/" className="inline-flex items-center gap-1.5 md:hidden">
               <PawIcon className="h-6 w-6 text-[#029f9c]" />
-              <span className="text-lg font-black uppercase tracking-wide text-white">Don Paco</span>
+              <span className="text-lg font-black uppercase tracking-wide text-white">PET´S SHOP</span>
             </Link>
 
             <div className="md:hidden">
               <HeaderCart />
             </div>
 
-            <Link href="/" className="hidden shrink-0 justify-self-start md:block">
-              <Image src="/logo.png" alt="Logo Don Paco" width={72} height={72} priority />
+            <Link href="/" className="hidden items-center gap-2 justify-self-start md:inline-flex">
+              <PawIcon className="h-7 w-7 text-white" />
+              <span className="text-xl font-black uppercase tracking-wide text-white">PET´S SHOP</span>
             </Link>
 
             <form className="order-3 hidden w-full md:order-none md:block md:justify-self-center" role="search">

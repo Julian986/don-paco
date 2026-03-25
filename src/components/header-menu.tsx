@@ -1,11 +1,35 @@
 "use client";
 
-const menuItems = [
-  { label: "Accesorios", hasDropdown: true },
-  { label: "Alimentos", hasDropdown: true },
-  { label: "Outlet", hasDropdown: false },
-  { label: "Preguntas frecuentes", hasDropdown: false },
-  { label: "Contacto", hasDropdown: false },
+import { useEffect, useState } from "react";
+
+type MenuItem = {
+  label: string;
+  href?: string;
+  children?: Array<{ label: string; href: string }>;
+};
+
+const menuItems: MenuItem[] = [
+  {
+    label: "Accesorios",
+    children: [
+      { label: "Collares y correas", href: "#" },
+      { label: "Comederos y bebederos", href: "#" },
+      { label: "Juguetes", href: "#" },
+      { label: "Higiene y cuidado", href: "#" },
+    ],
+  },
+  {
+    label: "Alimentos",
+    children: [
+      { label: "Alimento seco", href: "#" },
+      { label: "Alimento humedo", href: "#" },
+      { label: "Snacks y premios", href: "#" },
+      { label: "Dietas veterinarias", href: "#" },
+    ],
+  },
+  { label: "Outlet", href: "#" },
+  { label: "Preguntas frecuentes", href: "#" },
+  { label: "Contacto", href: "#" },
 ];
 
 type HeaderMenuProps = {
@@ -14,6 +38,14 @@ type HeaderMenuProps = {
 };
 
 export default function HeaderMenu({ isMobileOpen, onRequestClose }: HeaderMenuProps) {
+  const [expandedMobileItem, setExpandedMobileItem] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isMobileOpen) {
+      setExpandedMobileItem(null);
+    }
+  }, [isMobileOpen]);
+
   return (
     <>
       <div
@@ -90,15 +122,46 @@ export default function HeaderMenu({ isMobileOpen, onRequestClose }: HeaderMenuP
 
               <div className="space-y-1">
                 {menuItems.map((item) => (
-                  <a
-                    key={item.label}
-                    href="#"
-                    onClick={onRequestClose}
-                    className="flex items-center justify-between rounded-md px-2.5 py-3 text-base font-medium text-white/95 transition-colors hover:bg-white/10 hover:text-[#f6d4ea]"
-                  >
-                    <span>{item.label}</span>
-                    {item.hasDropdown ? <span className="text-[11px]">▼</span> : null}
-                  </a>
+                  <div key={item.label}>
+                    {item.children ? (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setExpandedMobileItem((prev) => (prev === item.label ? null : item.label))
+                        }
+                        className="flex w-full items-center justify-between rounded-md px-2.5 py-3 text-left text-base font-medium text-white/95 transition-colors hover:bg-white/10 hover:text-[#f6d4ea]"
+                        aria-expanded={expandedMobileItem === item.label}
+                      >
+                        <span>{item.label}</span>
+                        <span className={`text-[11px] transition-transform ${expandedMobileItem === item.label ? "rotate-180" : ""}`}>
+                          ▼
+                        </span>
+                      </button>
+                    ) : (
+                      <a
+                        href={item.href ?? "#"}
+                        onClick={onRequestClose}
+                        className="flex items-center justify-between rounded-md px-2.5 py-3 text-base font-medium text-white/95 transition-colors hover:bg-white/10 hover:text-[#f6d4ea]"
+                      >
+                        <span>{item.label}</span>
+                      </a>
+                    )}
+
+                    {item.children && expandedMobileItem === item.label ? (
+                      <div className="mb-1 ml-3 space-y-1 border-l border-white/25 pl-3">
+                        {item.children.map((child) => (
+                          <a
+                            key={child.label}
+                            href={child.href}
+                            onClick={onRequestClose}
+                            className="block rounded-md px-2 py-1.5 text-[15px] text-white/85 transition-colors hover:bg-white/10 hover:text-[#f6d4ea]"
+                          >
+                            {child.label}
+                          </a>
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
                 ))}
               </div>
             </div>
@@ -111,14 +174,29 @@ export default function HeaderMenu({ isMobileOpen, onRequestClose }: HeaderMenuP
           <div className="hidden no-scrollbar overflow-x-auto lg:pl-[284px] md:block">
             <div className="flex min-w-max items-center gap-x-7 py-2.5 text-[17px] font-medium text-white">
               {menuItems.map((item) => (
-                <a
-                  key={item.label}
-                  href="#"
-                  className="inline-flex items-center gap-1 transition-colors hover:text-[#f6d4ea]"
-                >
-                  {item.label}
-                  {item.hasDropdown ? <span className="text-[12px]">▼</span> : null}
-                </a>
+                <div key={item.label} className="relative group/menu">
+                  <a
+                    href={item.href ?? "#"}
+                    className="inline-flex items-center gap-1 transition-colors hover:text-[#f6d4ea]"
+                  >
+                    {item.label}
+                    {item.children ? <span className="text-[12px]">▼</span> : null}
+                  </a>
+
+                  {item.children ? (
+                    <div className="invisible absolute left-0 top-[calc(100%+10px)] z-20 w-56 rounded-lg border border-[#d8d8d8] bg-white p-2 opacity-0 shadow-lg transition-all group-hover/menu:visible group-hover/menu:opacity-100">
+                      {item.children.map((child) => (
+                        <a
+                          key={child.label}
+                          href={child.href}
+                          className="block rounded-md px-3 py-2 text-sm font-medium text-[#5f5f5f] transition-colors hover:bg-[#f4f4f4] hover:text-[#029f9c]"
+                        >
+                          {child.label}
+                        </a>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
               ))}
             </div>
           </div>
