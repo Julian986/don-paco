@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { shopMenuGroups } from "@/lib/category-tree";
 
 type MenuItem = {
   label: string;
@@ -10,25 +11,10 @@ type MenuItem = {
 };
 
 const menuItems: MenuItem[] = [
-  {
-    label: "Accesorios",
-    children: [
-      { label: "Collares y correas", href: "#" },
-      { label: "Comederos y bebederos", href: "#" },
-      { label: "Juguetes", href: "#" },
-      { label: "Higiene y cuidado", href: "#" },
-    ],
-  },
-  {
-    label: "Alimentos",
-    children: [
-      { label: "Alimento seco", href: "#" },
-      { label: "Alimento humedo", href: "#" },
-      { label: "Snacks y premios", href: "#" },
-      { label: "Dietas veterinarias", href: "#" },
-    ],
-  },
-  { label: "Outlet", href: "#" },
+  ...shopMenuGroups.map((group) => ({
+    label: group.title,
+    children: group.links.map((link) => ({ label: link.label, href: link.href })),
+  })),
   { label: "Preguntas frecuentes", href: "/preguntas-frecuentes" },
   { label: "Contacto", href: "#" },
 ];
@@ -37,6 +23,10 @@ type HeaderMenuProps = {
   isMobileOpen: boolean;
   onRequestClose: () => void;
 };
+
+function isInternalHref(href: string) {
+  return href.startsWith("/");
+}
 
 export default function HeaderMenu({ isMobileOpen, onRequestClose }: HeaderMenuProps) {
   const [expandedMobileItem, setExpandedMobileItem] = useState<string | null>(null);
@@ -157,17 +147,28 @@ export default function HeaderMenu({ isMobileOpen, onRequestClose }: HeaderMenuP
                     )}
 
                     {item.children && expandedMobileItem === item.label ? (
-                      <div className="mb-1 ml-3 space-y-1 border-l border-white/25 pl-3">
-                        {item.children.map((child) => (
-                          <a
-                            key={child.label}
-                            href={child.href}
-                            onClick={onRequestClose}
-                            className="block rounded-md px-2 py-1.5 text-[15px] text-white/85 transition-colors hover:bg-white/10 hover:text-[#f6d4ea]"
-                          >
-                            {child.label}
-                          </a>
-                        ))}
+                      <div className="mb-1 ml-3 max-h-[55vh] space-y-0.5 overflow-y-auto border-l border-white/25 pl-3">
+                        {item.children.map((child) =>
+                          isInternalHref(child.href) ? (
+                            <Link
+                              key={child.label}
+                              href={child.href}
+                              onClick={onRequestClose}
+                              className="block rounded-md px-2 py-1.5 text-[13px] leading-snug text-white/85 transition-colors hover:bg-white/10 hover:text-[#f6d4ea]"
+                            >
+                              {child.label}
+                            </Link>
+                          ) : (
+                            <a
+                              key={child.label}
+                              href={child.href}
+                              onClick={onRequestClose}
+                              className="block rounded-md px-2 py-1.5 text-[13px] leading-snug text-white/85 transition-colors hover:bg-white/10 hover:text-[#f6d4ea]"
+                            >
+                              {child.label}
+                            </a>
+                          ),
+                        )}
                       </div>
                     ) : null}
                   </div>
@@ -183,7 +184,7 @@ export default function HeaderMenu({ isMobileOpen, onRequestClose }: HeaderMenuP
           <div className="hidden no-scrollbar overflow-x-auto md:block min-[1810px]:lg:pl-[284px]">
             <div className="flex min-w-max items-center gap-x-7 py-2.5 text-[17px] font-medium text-white">
               {menuItems.map((item) => (
-                <div key={item.label} className="relative group/menu">
+                <div key={item.label} className="group/menu relative">
                   {item.href?.startsWith("/") && !item.children ? (
                     <Link
                       href={item.href}
@@ -202,16 +203,26 @@ export default function HeaderMenu({ isMobileOpen, onRequestClose }: HeaderMenuP
                   )}
 
                   {item.children ? (
-                    <div className="invisible absolute left-0 top-[calc(100%+10px)] z-20 w-56 rounded-lg border border-[#d8d8d8] bg-white p-2 opacity-0 shadow-lg transition-all group-hover/menu:visible group-hover/menu:opacity-100">
-                      {item.children.map((child) => (
-                        <a
-                          key={child.label}
-                          href={child.href}
-                          className="block rounded-md px-3 py-2 text-sm font-medium text-[#5f5f5f] transition-colors hover:bg-[#f4f4f4] hover:text-[#029f9c]"
-                        >
-                          {child.label}
-                        </a>
-                      ))}
+                    <div className="invisible absolute left-0 top-[calc(100%+10px)] z-20 max-h-[70vh] w-[min(100vw-2rem,22rem)] overflow-y-auto rounded-lg border border-[#d8d8d8] bg-white p-2 opacity-0 shadow-lg transition-all group-hover/menu:visible group-hover/menu:opacity-100">
+                      {item.children.map((child) =>
+                        isInternalHref(child.href) ? (
+                          <Link
+                            key={child.label}
+                            href={child.href}
+                            className="block rounded-md px-3 py-2 text-left text-[13px] font-medium leading-snug text-[#5f5f5f] transition-colors hover:bg-[#f4f4f4] hover:text-[#029f9c]"
+                          >
+                            {child.label}
+                          </Link>
+                        ) : (
+                          <a
+                            key={child.label}
+                            href={child.href}
+                            className="block rounded-md px-3 py-2 text-left text-[13px] font-medium leading-snug text-[#5f5f5f] transition-colors hover:bg-[#f4f4f4] hover:text-[#029f9c]"
+                          >
+                            {child.label}
+                          </a>
+                        ),
+                      )}
                     </div>
                   ) : null}
                 </div>

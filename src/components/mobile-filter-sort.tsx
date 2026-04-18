@@ -8,8 +8,13 @@ type FilterGroup = {
   options: string[];
 };
 
+type CategoryOption = {
+  id: string;
+  label: string;
+};
+
 type MobileFilterSortProps = {
-  categoryLinks: string[];
+  categoryOptions: CategoryOption[];
   filterGroups: FilterGroup[];
   selectedCategory: string;
   onChangeCategory: (category: string) => void;
@@ -23,7 +28,7 @@ const sortOptions = [
 ];
 
 export default function MobileFilterSort({
-  categoryLinks,
+  categoryOptions,
   filterGroups,
   selectedCategory,
   onChangeCategory,
@@ -137,7 +142,7 @@ export default function MobileFilterSort({
           {selectedSort}
         </span>
         <span className="whitespace-nowrap rounded-full bg-[#f1f1f1] px-3 py-1 text-xs font-semibold text-[#666]">
-          {selectedCategory === "Todas" ? "Todas las categorias" : selectedCategory}
+          {categoryOptions.find((item) => item.id === selectedCategory)?.label ?? "Todas las categorías"}
         </span>
         {selectedFilterPreview.map((item) => (
           <span
@@ -196,18 +201,18 @@ export default function MobileFilterSort({
                   >
                     Todas
                   </button>
-                  {categoryLinks.map((item) => (
+                  {categoryOptions.map((item) => (
                     <button
-                      key={item}
+                      key={item.id}
                       type="button"
-                      onClick={() => onChangeCategory(item)}
+                      onClick={() => onChangeCategory(item.id)}
                       className={`block w-full rounded-md px-2 py-1.5 text-left text-[15px] transition-colors ${
-                        selectedCategory === item
+                        selectedCategory === item.id
                           ? "bg-[#029f9c]/10 font-semibold text-[#029f9c]"
                           : "text-[#666] hover:bg-[#f2f2f2]"
                       }`}
                     >
-                      {item}
+                      {item.label}
                     </button>
                   ))}
                 </div>

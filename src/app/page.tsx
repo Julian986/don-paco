@@ -1,34 +1,75 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import HeroBanner from "@/components/HeroBanner";
 import MobileFilterSort from "@/components/mobile-filter-sort";
 import PawIcon from "@/components/paw-icon";
 import ProductCard from "@/components/product-card";
+import ProductGroupCard from "@/components/product-group-card";
 import SiteHeader from "@/components/site-header";
 import SortDropdown from "@/components/sort-dropdown";
-import { products } from "@/lib/products";
+import { flatCategoryButtons, isCategoryId, navRoot, type NavNode } from "@/lib/category-tree";
+import { buildListingEntries } from "@/lib/products";
 
-const categoryLinks = ["Moises", "Colchonetas", "Mantas", "Catres"];
+function CategoryNav({
+  nodes,
+  depth,
+  selectedCategory,
+  onSelect,
+}: {
+  nodes: readonly NavNode[];
+  depth: number;
+  selectedCategory: string;
+  onSelect: (id: string) => void;
+}) {
+  return (
+    <ul className={depth === 0 ? "space-y-2" : "ml-0.5 space-y-1 border-l border-[#e8e8e8] pl-2.5"}>
+      {nodes.map((node, idx) =>
+        node.kind === "leaf" ? (
+          <li key={node.id}>
+            <button
+              type="button"
+              onClick={() => onSelect(node.id)}
+              className={`w-full cursor-pointer rounded-md px-2 py-1 text-left text-[14px] transition-colors ${
+                selectedCategory === node.id
+                  ? "bg-[#029f9c]/10 font-semibold text-[#029f9c]"
+                  : "text-[#666] hover:bg-[#f6f6f6] hover:text-[#e4077d]"
+              }`}
+            >
+              {node.label}
+            </button>
+          </li>
+        ) : (
+          <li key={`${node.label}-${idx}`} className={depth > 0 ? "pt-1" : ""}>
+            <p
+              className={`mb-1 px-2 font-semibold text-[#555] ${
+                depth === 0
+                  ? "text-[11px] font-black uppercase tracking-wider text-[#9a9a9a]"
+                  : "text-[13px] text-[#666]"
+              }`}
+            >
+              {node.label}
+            </p>
+            <CategoryNav nodes={node.children} depth={depth + 1} selectedCategory={selectedCategory} onSelect={onSelect} />
+          </li>
+        ),
+      )}
+    </ul>
+  );
+}
 
 const filterGroups = [
   {
-    title: "Color",
-    options: ["Gris (31)", "Fucsia (3)", "Beige (16)", "Verde (17)", "Negro (21)"],
-  },
-  {
-    title: "Tamaño",
-    options: ["Chico (14)", "Mediano (11)", "Grande (16)"],
-  },
-  {
     title: "Precio",
-    options: ["$10.000 - $30.000", "$30.000 - $60.000", "$60.000+"],
+    options: ["Menos de $20.000", "$20.000 - $50.000", "$50.000 - $100.000", "Más de $100.000"],
   },
 ];
 
 const footerColumns = [
   {
     title: "Tienda",
-    links: ["Perros", "Gatos", "Accesorios", "Alimentos", "Ofertas"],
+    links: ["Alimentos", "Accesorios", "Preguntas frecuentes"],
   },
   {
     title: "Soporte",
@@ -45,16 +86,48 @@ const footerColumns = [
 ];
 
 export default function Home() {
+  const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<string>("Todas");
 
-  const filteredProducts = useMemo(() => {
-    if (selectedCategory === "Todas") return products;
-    return products.filter((product) => product.category === selectedCategory);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const c = params.get("categoria");
+    if (c && isCategoryId(c)) {
+      setSelectedCategory(c);
+    }
+  }, []);
+
+  const selectCategory = useCallback(
+    (id: string) => {
+      setSelectedCategory(id);
+      if (id === "Todas") {
+        router.replace("/", { scroll: false });
+      } else {
+        router.replace(`/?categoria=${id}`, { scroll: false });
+      }
+    },
+    [router],
+  );
+
+  const filteredListing = useMemo(() => {
+    const entries = buildListingEntries();
+    if (selectedCategory === "Todas") return entries;
+    return entries.filter((entry) => {
+      if (entry.type === "product") {
+        return entry.product.categoryId === selectedCategory;
+      }
+      return (
+        entry.categoryId === selectedCategory ||
+        entry.variants.some((v) => v.categoryId === selectedCategory)
+      );
+    });
   }, [selectedCategory]);
 
   return (
     <main className="min-h-screen bg-white text-[#3f3f3f]">
       <SiteHeader />
+
+      <HeroBanner />
 
       <section className="mx-auto w-full max-w-7xl px-4 py-6 md:px-6 md:py-8">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
@@ -75,46 +148,39 @@ export default function Home() {
         </div>
 
         <MobileFilterSort
-          categoryLinks={categoryLinks}
+          categoryOptions={flatCategoryButtons}
           filterGroups={filterGroups}
           selectedCategory={selectedCategory}
-          onChangeCategory={setSelectedCategory}
+          onChangeCategory={selectCategory}
         />
 
-        <div className="grid gap-6 lg:items-start lg:grid-cols-[260px_1fr]">
+        <div className="grid gap-6 lg:items-start lg:grid-cols-[280px_1fr]">
           <aside className="hidden h-fit rounded-xl border border-[#e6e6e6] bg-white p-5 lg:block">
             <h2 className="mb-4 text-sm font-extrabold uppercase tracking-widest text-[#029f9c]">
-              Categorias
+              Categorías
             </h2>
-            <ul className="mb-6 space-y-2 text-base md:text-[18px]">
+            <ul className="mb-6 space-y-1 text-[15px]">
               <li>
                 <button
                   type="button"
-                  onClick={() => setSelectedCategory("Todas")}
-                  className={`cursor-pointer text-left transition-colors ${
+                  onClick={() => selectCategory("Todas")}
+                  className={`w-full cursor-pointer rounded-md px-2 py-1.5 text-left transition-colors ${
                     selectedCategory === "Todas"
-                      ? "font-semibold text-[#029f9c]"
-                      : "text-[#666] hover:text-[#e4077d]"
+                      ? "bg-[#029f9c]/10 font-semibold text-[#029f9c]"
+                      : "text-[#666] hover:bg-[#f6f6f6] hover:text-[#e4077d]"
                   }`}
                 >
                   Todas
                 </button>
               </li>
-              {categoryLinks.map((item) => (
-                <li key={item}>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedCategory(item)}
-                    className={`cursor-pointer text-left transition-colors ${
-                      selectedCategory === item
-                        ? "font-semibold text-[#029f9c]"
-                        : "text-[#666] hover:text-[#e4077d]"
-                    }`}
-                  >
-                    {item}
-                  </button>
-                </li>
-              ))}
+              <li className="pt-1">
+                <CategoryNav
+                  nodes={navRoot}
+                  depth={0}
+                  selectedCategory={selectedCategory}
+                  onSelect={selectCategory}
+                />
+              </li>
             </ul>
 
             <h3 className="mb-4 text-sm font-extrabold uppercase tracking-widest text-[#029f9c]">
@@ -142,9 +208,21 @@ export default function Home() {
           </aside>
 
           <div className="order-1 grid grid-cols-2 gap-3 sm:gap-5 2xl:grid-cols-3 lg:order-2">
-            {filteredProducts.map((product) => (
-              <ProductCard key={product.slug} product={product} />
-            ))}
+            {filteredListing.map((entry) =>
+              entry.type === "group" ? (
+                <ProductGroupCard
+                  key={entry.groupSlug}
+                  entry={entry}
+                  showPetAudience={selectedCategory === "Todas"}
+                />
+              ) : (
+                <ProductCard
+                  key={entry.product.slug}
+                  product={entry.product}
+                  showPetAudience={selectedCategory === "Todas"}
+                />
+              ),
+            )}
           </div>
         </div>
 

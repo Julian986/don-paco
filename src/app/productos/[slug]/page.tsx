@@ -1,28 +1,65 @@
+import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import PawIcon from "@/components/paw-icon";
+import ProductGroupDetailView from "@/components/product-group-detail-view";
 import ProductDetailActions from "@/components/product-detail-actions";
 import SiteFooter from "@/components/site-footer";
 import SiteHeader from "@/components/site-header";
-import { formatArs, getProductBySlug, products } from "@/lib/products";
+import { getGroupSlugForVariantSlug } from "@/lib/product-groups";
+import {
+  formatArs,
+  getDetailHrefForProductSlug,
+  getGroupListingIfExists,
+  getProductBySlug,
+  listAllProductPageSlugs,
+  products,
+} from "@/lib/products";
 
 type ProductDetailPageProps = {
   params: Promise<{ slug: string }>;
 };
 
 export function generateStaticParams() {
-  return products.map((product) => ({ slug: product.slug }));
+  return listAllProductPageSlugs().map((slug) => ({ slug }));
 }
 
 export default async function ProductDetailPage({ params }: ProductDetailPageProps) {
   const { slug } = await params;
+
+  const group = getGroupListingIfExists(slug);
+  if (group) {
+    const exclude = new Set(group.variants.map((v) => v.slug));
+    const relatedProducts = products
+      .filter((p) => !exclude.has(p.slug))
+      .sort((a, b) => {
+        const aMatch = a.categoryId === group.categoryId ? 1 : 0;
+        const bMatch = b.categoryId === group.categoryId ? 1 : 0;
+        return bMatch - aMatch;
+      })
+      .slice(0, 3);
+    return <ProductGroupDetailView group={group} relatedProducts={relatedProducts} />;
+  }
+
+  const groupSlug = getGroupSlugForVariantSlug(slug);
+  if (groupSlug) {
+    redirect(`/productos/${groupSlug}`);
+  }
+
   const product = getProductBySlug(slug);
 
   if (!product) {
     notFound();
   }
 
-  const relatedProducts = products.filter((item) => item.slug !== product.slug).slice(0, 3);
+  const relatedProducts = products
+    .filter((item) => item.slug !== product.slug)
+    .sort((a, b) => {
+      const aMatch = a.categoryId === product.categoryId ? 1 : 0;
+      const bMatch = b.categoryId === product.categoryId ? 1 : 0;
+      return bMatch - aMatch;
+    })
+    .slice(0, 3);
 
   return (
     <main className="min-h-screen bg-white text-[#3f3f3f]">
@@ -54,22 +91,47 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
                 <span className="rounded-full bg-[#e4077d] px-2 py-1 text-white">2x1</span>
                 <span className="rounded-full bg-[#029f9c] px-2 py-1 text-white">Envio gratis</span>
               </div>
-              <div className="flex h-64 items-center justify-center rounded-xl bg-white/80 sm:h-80 md:h-[360px]">
-                <PawIcon className="h-20 w-20 text-[#029f9c] md:h-24 md:w-24" />
+              <div className="relative flex h-64 items-center justify-center rounded-xl bg-white/80 sm:h-80 md:h-[360px]">
+                {product.imageSrc ? (
+                  <Image
+                    src={product.imageSrc}
+                    alt={product.name}
+                    width={720}
+                    height={720}
+                    className="max-h-full w-auto max-w-full object-contain p-4"
+                    priority
+                  />
+                ) : (
+                  <PawIcon className="h-20 w-20 text-[#029f9c] md:h-24 md:w-24" />
+                )}
               </div>
             </div>
 
-            <div className="grid grid-cols-4 gap-3">
-              {[1, 2, 3, 4].map((thumb) => (
-                <button
-                  key={thumb}
-                  type="button"
-                  className="flex h-24 items-center justify-center rounded-lg border border-[#e2e2e2] bg-[#f7f7f7] text-3xl transition-colors hover:border-[#029f9c]"
-                >
-                  <PawIcon className="h-10 w-10 text-[#029f9c]" />
-                </button>
-              ))}
-            </div>
+            {product.imageSrc ? (
+              <div className="grid max-w-md grid-cols-4 gap-3">
+                <div className="relative flex h-24 items-center justify-center rounded-lg border border-[#029f9c] bg-white">
+                  <Image
+                    src={product.imageSrc}
+                    alt={`Miniatura de ${product.name}`}
+                    width={120}
+                    height={120}
+                    className="max-h-[88px] w-auto object-contain p-1"
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-4 gap-3">
+                {[1, 2, 3, 4].map((thumb) => (
+                  <button
+                    key={thumb}
+                    type="button"
+                    className="flex h-24 items-center justify-center rounded-lg border border-[#e2e2e2] bg-[#f7f7f7] text-3xl transition-colors hover:border-[#029f9c]"
+                  >
+                    <PawIcon className="h-10 w-10 text-[#029f9c]" />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="rounded-2xl border border-[#e6e6e6] bg-white p-6 shadow-sm">
@@ -85,9 +147,12 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
 
             <div className="mb-6 rounded-xl bg-[#f7f7f7] p-4">
               <p className="text-3xl font-black text-[#029f9c]">{formatArs(product.price)}</p>
-              <p className="mt-1 text-sm text-[#7a7a7a]">{formatArs(product.cashPrice)} con Efectivo</p>
+              <p className="mt-1 text-sm text-[#7a7a7a]">
+                {formatArs(product.cashPrice)} efectivo o transferencia
+              </p>
+              <p className="mt-2 text-xs text-[#8a8a8a]">Lista en local: {formatArs(product.precioLista)}</p>
               <p className="mt-3 text-xs uppercase tracking-wide text-[#8f8f8f]">
-                Hasta 3 cuotas sin interes con tarjetas seleccionadas
+                Tarjeta de crédito: precio de lista + 10% (según lista del negocio)
               </p>
             </div>
 
@@ -141,11 +206,15 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
               </div>
               <div className="flex items-center justify-between gap-4 border-b border-[#e5e5e5] pb-2">
                 <dt className="text-[#8a8a8a]">Tamaños</dt>
-                <dd className="font-semibold text-[#555]">{product.sizes.join(", ")}</dd>
+                <dd className="font-semibold text-[#555]">
+                  {product.sizes.length ? product.sizes.join(", ") : "No aplica"}
+                </dd>
               </div>
               <div className="flex items-center justify-between gap-4">
                 <dt className="text-[#8a8a8a]">Colores</dt>
-                <dd className="text-right font-semibold text-[#555]">{product.colors.join(", ")}</dd>
+                <dd className="text-right font-semibold text-[#555]">
+                  {product.colors.length ? product.colors.join(", ") : "No aplica"}
+                </dd>
               </div>
             </dl>
           </aside>
@@ -167,11 +236,21 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
                 key={item.slug}
                 className="rounded-xl border border-[#e2e2e2] bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
               >
-                <div className="mb-3 flex h-40 items-center justify-center rounded-lg bg-gradient-to-br from-[#f5f5f5] to-[#ececec]">
-                  <PawIcon className="h-14 w-14 text-[#029f9c]" />
+                <div className="relative mb-3 flex h-40 items-center justify-center rounded-lg bg-gradient-to-br from-[#f5f5f5] to-[#ececec]">
+                  {item.imageSrc ? (
+                    <Image
+                      src={item.imageSrc}
+                      alt={item.name}
+                      width={200}
+                      height={200}
+                      className="max-h-[140px] w-auto object-contain p-2"
+                    />
+                  ) : (
+                    <PawIcon className="h-14 w-14 text-[#029f9c]" />
+                  )}
                 </div>
                 <h3 className="mb-2 text-base font-extrabold uppercase leading-tight text-[#777]">
-                  <Link href={`/productos/${item.slug}`} className="hover:text-[#029f9c]">
+                  <Link href={`/productos/${getDetailHrefForProductSlug(item.slug)}`} className="hover:text-[#029f9c]">
                     {item.name}
                   </Link>
                 </h3>

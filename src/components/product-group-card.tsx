@@ -3,23 +3,20 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCart } from "@/components/cart-provider";
-import PawIcon from "@/components/paw-icon";
 import { petAudienceShortLabel } from "@/lib/category-tree";
-import { formatArs, type Product } from "@/lib/products";
+import { formatArs, type ListingEntry } from "@/lib/products";
 
-type ProductCardProps = {
-  product: Product;
-  /** En vista "Todas" ayuda a ver si es perro, gato, etc. */
+type ProductGroupCardProps = {
+  entry: Extract<ListingEntry, { type: "group" }>;
   showPetAudience?: boolean;
 };
 
-export default function ProductCard({ product, showPetAudience }: ProductCardProps) {
-  const { addItem } = useCart();
+export default function ProductGroupCard({ entry, showPetAudience }: ProductGroupCardProps) {
   const router = useRouter();
+  const href = `/productos/${entry.groupSlug}`;
 
   const goToDetail = () => {
-    router.push(`/productos/${product.slug}`);
+    router.push(href);
   };
 
   const handleCardClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -41,7 +38,7 @@ export default function ProductCard({ product, showPetAudience }: ProductCardPro
       onKeyDown={handleCardKeyDown}
       tabIndex={0}
       role="link"
-      aria-label={`${showPetAudience ? `${petAudienceShortLabel(product.categoryId)} · ` : ""}Ver detalle de ${product.name}`}
+      aria-label={`${showPetAudience ? `${petAudienceShortLabel(entry.categoryId)} · ` : ""}Ver opciones de ${entry.displayName}`}
     >
       <div className="relative aspect-[5/6] w-full shrink-0 bg-white sm:aspect-[4/5]">
         <div className="pointer-events-none absolute left-2 right-2 top-2 z-10 flex items-start justify-between gap-1.5 sm:left-2.5 sm:right-2.5 sm:top-2.5">
@@ -52,52 +49,48 @@ export default function ProductCard({ product, showPetAudience }: ProductCardPro
             Envio gratis
           </span>
         </div>
-        {product.imageSrc ? (
+        {entry.imageSrc ? (
           <Image
-            src={product.imageSrc}
-            alt={product.name}
+            src={entry.imageSrc}
+            alt={entry.displayName}
             fill
             className="object-cover"
             sizes="(max-width: 640px) 50vw, 280px"
           />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center bg-[#f4f4f4]">
-            <PawIcon className="h-9 w-9 text-[#029f9c] sm:h-14 sm:w-14" />
+          <div className="absolute inset-0 flex items-center justify-center bg-[#f4f4f4] text-sm font-semibold text-[#888]">
+            Sin imagen
           </div>
         )}
       </div>
 
       <div className="flex flex-1 flex-col p-2.5 sm:p-4">
         {showPetAudience ? (
-          <p className="mb-1 text-[10px] font-bold uppercase tracking-wide text-[#9a9a9a]">
-            {petAudienceShortLabel(product.categoryId)}
+          <p className="mb-0.5 text-[10px] font-bold uppercase tracking-wide text-[#9a9a9a]">
+            {petAudienceShortLabel(entry.categoryId)}
           </p>
         ) : null}
+        <p className="mb-1 text-[10px] font-bold uppercase tracking-wide text-[#029f9c]">
+          Varias presentaciones
+        </p>
         <h4 className="mb-1 min-h-[2.4rem] text-[13px] font-extrabold uppercase leading-tight text-[#777] sm:mb-2 sm:min-h-[3rem] sm:text-base">
-          <Link href={`/productos/${product.slug}`} className="transition-colors hover:text-[#029f9c]">
-            {product.name}
+          <Link href={href} className="transition-colors hover:text-[#029f9c]">
+            {entry.displayName}
           </Link>
         </h4>
-        <p className="text-base font-black text-[#029f9c] sm:text-xl">{formatArs(product.price)}</p>
+        <p className="text-base font-black text-[#029f9c] sm:text-xl">Desde {formatArs(entry.fromPrice)}</p>
         <p className="mb-3 text-[11px] text-[#888] sm:mb-4 sm:text-sm">
-          {formatArs(product.cashPrice)} efectivo o transferencia
+          Desde {formatArs(entry.fromCashPrice)} efectivo o transferencia
         </p>
         <div className="mt-auto flex flex-col gap-1.5 sm:flex-row sm:gap-2">
-          <button
-            type="button"
-            onClick={() =>
-              addItem({
-                slug: product.slug,
-                name: product.name,
-                price: product.price,
-              })
-            }
-            className="flex-1 rounded-md bg-[#029f9c] px-3 py-2 text-[11px] font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#028785] sm:text-xs"
-          >
-            Comprar
-          </button>
           <Link
-            href={`/productos/${product.slug}`}
+            href={href}
+            className="flex-1 rounded-md bg-[#029f9c] px-3 py-2 text-center text-[11px] font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#028785] sm:text-xs"
+          >
+            Elegir formato
+          </Link>
+          <Link
+            href={href}
             className="rounded-md border border-[#e4077d] px-3 py-2 text-center text-[11px] font-bold uppercase tracking-wide text-[#e4077d] transition-colors hover:bg-[#e4077d] hover:text-white sm:text-xs"
           >
             Ver

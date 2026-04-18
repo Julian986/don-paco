@@ -40,51 +40,55 @@ export default function ProductDetailActions({
 
   return (
     <>
-      <div className="mb-5">
-        <p className="mb-2 text-xs font-bold uppercase tracking-wider text-[#8a8a8a]">Color</p>
-        <div className="flex flex-wrap gap-2">
-          {colors.map((color) => {
-            const isSelected = color === selectedColor;
-            return (
-              <button
-                key={color}
-                type="button"
-                onClick={() => setSelectedColor(color)}
-                className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${
-                  isSelected
-                    ? "border-[#029f9c] bg-[#029f9c]/10 text-[#029f9c]"
-                    : "border-[#d8d8d8] text-[#666] hover:border-[#029f9c] hover:text-[#029f9c]"
-                }`}
-              >
-                {color}
-              </button>
-            );
-          })}
+      {colors.length > 0 ? (
+        <div className="mb-5">
+          <p className="mb-2 text-xs font-bold uppercase tracking-wider text-[#8a8a8a]">Color</p>
+          <div className="flex flex-wrap gap-2">
+            {colors.map((color) => {
+              const isSelected = color === selectedColor;
+              return (
+                <button
+                  key={color}
+                  type="button"
+                  onClick={() => setSelectedColor(color)}
+                  className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${
+                    isSelected
+                      ? "border-[#029f9c] bg-[#029f9c]/10 text-[#029f9c]"
+                      : "border-[#d8d8d8] text-[#666] hover:border-[#029f9c] hover:text-[#029f9c]"
+                  }`}
+                >
+                  {color}
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      ) : null}
 
-      <div className="mb-8">
-        <p className="mb-2 text-xs font-bold uppercase tracking-wider text-[#8a8a8a]">Tamaño</p>
-        <div className="flex flex-wrap gap-2">
-          {sizes.map((size) => {
-            const isSelected = size === selectedSize;
-            return (
-              <button
-                key={size}
-                type="button"
-                onClick={() => setSelectedSize(size)}
-                className={`rounded-md border px-3 py-1.5 text-sm font-medium transition-colors ${
-                  isSelected
-                    ? "border-[#029f9c] bg-[#029f9c]/10 text-[#029f9c]"
-                    : "border-[#d8d8d8] text-[#666] hover:border-[#029f9c] hover:text-[#029f9c]"
-                }`}
-              >
-                {size}
-              </button>
-            );
-          })}
+      {sizes.length > 0 ? (
+        <div className="mb-8">
+          <p className="mb-2 text-xs font-bold uppercase tracking-wider text-[#8a8a8a]">Tamaño</p>
+          <div className="flex flex-wrap gap-2">
+            {sizes.map((size) => {
+              const isSelected = size === selectedSize;
+              return (
+                <button
+                  key={size}
+                  type="button"
+                  onClick={() => setSelectedSize(size)}
+                  className={`rounded-md border px-3 py-1.5 text-sm font-medium transition-colors ${
+                    isSelected
+                      ? "border-[#029f9c] bg-[#029f9c]/10 text-[#029f9c]"
+                      : "border-[#d8d8d8] text-[#666] hover:border-[#029f9c] hover:text-[#029f9c]"
+                  }`}
+                >
+                  {size}
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      ) : null}
 
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="flex items-center rounded-md border border-[#d8d8d8]">
