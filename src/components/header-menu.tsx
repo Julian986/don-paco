@@ -2,7 +2,60 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { shopMenuGroups } from "@/lib/category-tree";
+import { navRoot, shopMenuGroups, type NavNode } from "@/lib/category-tree";
+
+function categoryBranchChildren(sectionTitle: string): readonly NavNode[] {
+  const hit = navRoot.find((n): n is Extract<NavNode, { kind: "branch" }> => n.kind === "branch" && n.label === sectionTitle);
+  return hit?.children ?? [];
+}
+
+function MenuNavTree({
+  nodes,
+  depth,
+  variant,
+  onNavigate,
+}: {
+  nodes: readonly NavNode[];
+  depth: number;
+  variant: "mobile" | "desktop";
+  onNavigate?: () => void;
+}) {
+  const isMobile = variant === "mobile";
+  const ulClass = isMobile
+    ? depth === 0
+      ? "space-y-0.5"
+      : "ml-2 mt-0.5 space-y-0.5 border-l border-white/30 pl-2.5"
+    : depth === 0
+      ? "space-y-0.5 p-1"
+      : "ml-2 mt-0.5 space-y-0.5 border-l border-[#e8e8e8] pl-2.5";
+
+  const branchClass = isMobile
+    ? "mb-0.5 px-2 pt-1.5 text-[11px] font-black uppercase tracking-wider text-white/55"
+    : "mb-0.5 px-2 pt-1.5 text-[11px] font-bold uppercase tracking-wide text-[#9a9a9a]";
+
+  const leafClass = isMobile
+    ? "block rounded-md px-2 py-1.5 text-left text-[14px] leading-snug text-white/90 transition-colors hover:bg-white/10 hover:text-[#f6d4ea]"
+    : "block rounded-md px-3 py-2 text-left text-[13px] font-medium leading-snug text-[#5f5f5f] transition-colors hover:bg-[#f4f4f4] hover:text-[#029f9c]";
+
+  return (
+    <ul className={ulClass}>
+      {nodes.map((node, idx) =>
+        node.kind === "leaf" ? (
+          <li key={node.id}>
+            <Link href={`/?categoria=${node.id}`} onClick={onNavigate} className={leafClass}>
+              {node.label}
+            </Link>
+          </li>
+        ) : (
+          <li key={`${node.label}-${idx}`}>
+            <p className={branchClass}>{node.label}</p>
+            <MenuNavTree nodes={node.children} depth={depth + 1} variant={variant} onNavigate={onNavigate} />
+          </li>
+        ),
+      )}
+    </ul>
+  );
+}
 
 type MenuItem = {
   label: string;
@@ -147,27 +200,38 @@ export default function HeaderMenu({ isMobileOpen, onRequestClose }: HeaderMenuP
                     )}
 
                     {item.children && expandedMobileItem === item.label ? (
-                      <div className="mb-1 ml-3 max-h-[55vh] space-y-0.5 overflow-y-auto border-l border-white/25 pl-3">
-                        {item.children.map((child) =>
-                          isInternalHref(child.href) ? (
-                            <Link
-                              key={child.label}
-                              href={child.href}
-                              onClick={onRequestClose}
-                              className="block rounded-md px-2 py-1.5 text-[13px] leading-snug text-white/85 transition-colors hover:bg-white/10 hover:text-[#f6d4ea]"
-                            >
-                              {child.label}
-                            </Link>
-                          ) : (
-                            <a
-                              key={child.label}
-                              href={child.href}
-                              onClick={onRequestClose}
-                              className="block rounded-md px-2 py-1.5 text-[13px] leading-snug text-white/85 transition-colors hover:bg-white/10 hover:text-[#f6d4ea]"
-                            >
-                              {child.label}
-                            </a>
-                          ),
+                      <div className="mb-1 ml-3 max-h-[55vh] overflow-y-auto border-l border-white/25 pl-3">
+                        {item.label === "Por mascota" || item.label === "Categorías generales" ? (
+                          <MenuNavTree
+                            nodes={categoryBranchChildren(item.label)}
+                            depth={0}
+                            variant="mobile"
+                            onNavigate={onRequestClose}
+                          />
+                        ) : (
+                          <div className="space-y-0.5">
+                            {item.children.map((child) =>
+                              isInternalHref(child.href) ? (
+                                <Link
+                                  key={child.label}
+                                  href={child.href}
+                                  onClick={onRequestClose}
+                                  className="block rounded-md px-2 py-1.5 text-[13px] leading-snug text-white/85 transition-colors hover:bg-white/10 hover:text-[#f6d4ea]"
+                                >
+                                  {child.label}
+                                </Link>
+                              ) : (
+                                <a
+                                  key={child.label}
+                                  href={child.href}
+                                  onClick={onRequestClose}
+                                  className="block rounded-md px-2 py-1.5 text-[13px] leading-snug text-white/85 transition-colors hover:bg-white/10 hover:text-[#f6d4ea]"
+                                >
+                                  {child.label}
+                                </a>
+                              ),
+                            )}
+                          </div>
                         )}
                       </div>
                     ) : null}
@@ -203,25 +267,33 @@ export default function HeaderMenu({ isMobileOpen, onRequestClose }: HeaderMenuP
                   )}
 
                   {item.children ? (
-                    <div className="invisible absolute left-0 top-[calc(100%+10px)] z-20 max-h-[70vh] w-[min(100vw-2rem,22rem)] overflow-y-auto rounded-lg border border-[#d8d8d8] bg-white p-2 opacity-0 shadow-lg transition-all group-hover/menu:visible group-hover/menu:opacity-100">
-                      {item.children.map((child) =>
-                        isInternalHref(child.href) ? (
-                          <Link
-                            key={child.label}
-                            href={child.href}
-                            className="block rounded-md px-3 py-2 text-left text-[13px] font-medium leading-snug text-[#5f5f5f] transition-colors hover:bg-[#f4f4f4] hover:text-[#029f9c]"
-                          >
-                            {child.label}
-                          </Link>
-                        ) : (
-                          <a
-                            key={child.label}
-                            href={child.href}
-                            className="block rounded-md px-3 py-2 text-left text-[13px] font-medium leading-snug text-[#5f5f5f] transition-colors hover:bg-[#f4f4f4] hover:text-[#029f9c]"
-                          >
-                            {child.label}
-                          </a>
-                        ),
+                    <div className="invisible absolute left-0 top-[calc(100%+10px)] z-20 max-h-[70vh] w-[min(100vw-2rem,22rem)] overflow-y-auto rounded-lg border border-[#d8d8d8] bg-white py-2 opacity-0 shadow-lg transition-all group-hover/menu:visible group-hover/menu:opacity-100">
+                      {item.label === "Por mascota" || item.label === "Categorías generales" ? (
+                        <MenuNavTree
+                          nodes={categoryBranchChildren(item.label)}
+                          depth={0}
+                          variant="desktop"
+                        />
+                      ) : (
+                        item.children.map((child) =>
+                          isInternalHref(child.href) ? (
+                            <Link
+                              key={child.label}
+                              href={child.href}
+                              className="block rounded-md px-3 py-2 text-left text-[13px] font-medium leading-snug text-[#5f5f5f] transition-colors hover:bg-[#f4f4f4] hover:text-[#029f9c]"
+                            >
+                              {child.label}
+                            </Link>
+                          ) : (
+                            <a
+                              key={child.label}
+                              href={child.href}
+                              className="block rounded-md px-3 py-2 text-left text-[13px] font-medium leading-snug text-[#5f5f5f] transition-colors hover:bg-[#f4f4f4] hover:text-[#029f9c]"
+                            >
+                              {child.label}
+                            </a>
+                          ),
+                        )
                       )}
                     </div>
                   ) : null}

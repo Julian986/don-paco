@@ -9,7 +9,7 @@ import ProductCard from "@/components/product-card";
 import ProductGroupCard from "@/components/product-group-card";
 import SiteHeader from "@/components/site-header";
 import SortDropdown from "@/components/sort-dropdown";
-import { flatCategoryButtons, isCategoryId, navRoot, type NavNode } from "@/lib/category-tree";
+import { isCategoryId, navRoot, type NavNode } from "@/lib/category-tree";
 import { buildListingEntries } from "@/lib/products";
 
 function CategoryNav({
@@ -148,7 +148,7 @@ export default function Home() {
         </div>
 
         <MobileFilterSort
-          categoryOptions={flatCategoryButtons}
+          navRoot={navRoot}
           filterGroups={filterGroups}
           selectedCategory={selectedCategory}
           onChangeCategory={selectCategory}

@@ -2,23 +2,71 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { lockBodyScroll, unlockBodyScroll } from "@/lib/body-scroll-lock";
+import { categoryBadgeLabel, isCategoryId, type NavNode } from "@/lib/category-tree";
 
 type FilterGroup = {
   title: string;
   options: string[];
 };
 
-type CategoryOption = {
-  id: string;
-  label: string;
-};
-
 type MobileFilterSortProps = {
-  categoryOptions: CategoryOption[];
+  navRoot: readonly NavNode[];
   filterGroups: FilterGroup[];
   selectedCategory: string;
   onChangeCategory: (category: string) => void;
 };
+
+function MobileCategoryNav({
+  nodes,
+  depth,
+  selectedCategory,
+  onSelectLeaf,
+}: {
+  nodes: readonly NavNode[];
+  depth: number;
+  selectedCategory: string;
+  onSelectLeaf: (id: string) => void;
+}) {
+  return (
+    <ul className={depth === 0 ? "space-y-2" : "ml-0.5 space-y-1 border-l border-[#e8e8e8] pl-2.5"}>
+      {nodes.map((node, idx) =>
+        node.kind === "leaf" ? (
+          <li key={node.id}>
+            <button
+              type="button"
+              onClick={() => onSelectLeaf(node.id)}
+              className={`w-full cursor-pointer rounded-md px-2 py-2 text-left text-[15px] leading-snug transition-colors ${
+                selectedCategory === node.id
+                  ? "bg-[#029f9c]/10 font-semibold text-[#029f9c]"
+                  : "text-[#444] hover:bg-[#f6f6f6] hover:text-[#e4077d]"
+              }`}
+            >
+              {node.label}
+            </button>
+          </li>
+        ) : (
+          <li key={`${node.label}-${idx}`} className={depth > 0 ? "pt-1" : ""}>
+            <p
+              className={`mb-1 px-2 font-semibold text-[#555] ${
+                depth === 0
+                  ? "text-[11px] font-black uppercase tracking-wider text-[#9a9a9a]"
+                  : "text-[13px] text-[#666]"
+              }`}
+            >
+              {node.label}
+            </p>
+            <MobileCategoryNav
+              nodes={node.children}
+              depth={depth + 1}
+              selectedCategory={selectedCategory}
+              onSelectLeaf={onSelectLeaf}
+            />
+          </li>
+        ),
+      )}
+    </ul>
+  );
+}
 
 const sortOptions = [
   "Destacado",
@@ -28,7 +76,7 @@ const sortOptions = [
 ];
 
 export default function MobileFilterSort({
-  categoryOptions,
+  navRoot,
   filterGroups,
   selectedCategory,
   onChangeCategory,
@@ -142,7 +190,11 @@ export default function MobileFilterSort({
           {selectedSort}
         </span>
         <span className="whitespace-nowrap rounded-full bg-[#f1f1f1] px-3 py-1 text-xs font-semibold text-[#666]">
-          {categoryOptions.find((item) => item.id === selectedCategory)?.label ?? "Todas las categorías"}
+          {selectedCategory === "Todas"
+            ? "Todas las categorías"
+            : isCategoryId(selectedCategory)
+              ? categoryBadgeLabel(selectedCategory)
+              : selectedCategory}
         </span>
         {selectedFilterPreview.map((item) => (
           <span
@@ -188,33 +240,31 @@ export default function MobileFilterSort({
 
             <div className="flex-1 overflow-y-auto px-4 py-4">
               <div className="mb-6">
-                <p className="mb-3 text-xs font-bold uppercase tracking-wider text-[#8f8f8f]">Categorias</p>
-                <div className="space-y-1">
+                <p className="mb-3 text-xs font-bold uppercase tracking-wider text-[#8f8f8f]">Categorías</p>
+                <div className="space-y-3">
                   <button
                     type="button"
-                    onClick={() => onChangeCategory("Todas")}
-                    className={`block w-full rounded-md px-2 py-1.5 text-left text-[15px] transition-colors ${
+                    onClick={() => {
+                      onChangeCategory("Todas");
+                      setIsFilterOpen(false);
+                    }}
+                    className={`block w-full rounded-md px-2 py-2 text-left text-[15px] font-medium transition-colors ${
                       selectedCategory === "Todas"
                         ? "bg-[#029f9c]/10 font-semibold text-[#029f9c]"
-                        : "text-[#666] hover:bg-[#f2f2f2]"
+                        : "text-[#444] hover:bg-[#f2f2f2]"
                     }`}
                   >
                     Todas
                   </button>
-                  {categoryOptions.map((item) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => onChangeCategory(item.id)}
-                      className={`block w-full rounded-md px-2 py-1.5 text-left text-[15px] transition-colors ${
-                        selectedCategory === item.id
-                          ? "bg-[#029f9c]/10 font-semibold text-[#029f9c]"
-                          : "text-[#666] hover:bg-[#f2f2f2]"
-                      }`}
-                    >
-                      {item.label}
-                    </button>
-                  ))}
+                  <MobileCategoryNav
+                    nodes={navRoot}
+                    depth={0}
+                    selectedCategory={selectedCategory}
+                    onSelectLeaf={(id) => {
+                      onChangeCategory(id);
+                      setIsFilterOpen(false);
+                    }}
+                  />
                 </div>
               </div>
 
