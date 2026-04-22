@@ -224,6 +224,222 @@ export const PRODUCT_GROUPS: readonly ProductGroupDefinition[] = [
     displayName: "Eukanuba — Cachorro",
     variantSlugs: ["eukanuba-cachorro-x15"],
   },
+  {
+    groupSlug: "pedigree-cachorro",
+    displayName: "Pedigree — Cachorro",
+    variantSlugs: ["pedigree-cachorro-x8", "pedigree-cachorro-x21"],
+  },
+  {
+    groupSlug: "pedigree-adulto",
+    displayName: "Pedigree — Adulto",
+    variantSlugs: [
+      "pedigree-adulto-x8",
+      "pedigree-adulto-x21",
+      "pedigree-adulto-x15",
+      "pedigree-adulto-rp-x21",
+    ],
+  },
+  {
+    groupSlug: "pedigree-adulto-raz-peq",
+    displayName: "Pedigree — Adulto raz. peq.",
+    variantSlugs: ["pedigree-adulto-raz-peq-x8", "pedigree-adulto-raz-peq-x15"],
+  },
+  {
+    groupSlug: "pedigree-senior",
+    displayName: "Pedigree — Senior",
+    variantSlugs: ["pedigree-senior-x8"],
+  },
+  {
+    groupSlug: "pampa-adulto-raz-peq",
+    displayName: "Pampa — Adulto (raza pequeña)",
+    variantSlugs: ["pampa-adulto-rp-x15"],
+  },
+  {
+    groupSlug: "voraz-adulto",
+    displayName: "Voraz — Adulto",
+    variantSlugs: ["voraz-adulto-x20", "voraz-adulto-x10"],
+  },
+  {
+    groupSlug: "maintenance-adulto-rp",
+    displayName: "Maintenance — Adulto / raza pequeña",
+    variantSlugs: ["maintenance-adulto-rp-x15", "maintenance-adulto-x22"],
+  },
+  {
+    groupSlug: "livra-cachorro",
+    displayName: "Livra — Cachorro",
+    variantSlugs: ["livra-cachorro-x3"],
+  },
+  {
+    groupSlug: "livra-adulto",
+    displayName: "Livra — Adulto",
+    variantSlugs: ["livra-adulto-x3"],
+  },
+  {
+    groupSlug: "royal-canin-starter",
+    displayName: "Royal Canin — Mini starter",
+    variantSlugs: ["royal-canin-mini-starter-x1", "royal-canin-mini-starter-x3"],
+  },
+  {
+    groupSlug: "royal-canin-mini-puppy",
+    displayName: "Royal Canin — Mini puppy",
+    variantSlugs: ["royal-canin-mini-puppy-x1", "royal-canin-mini-puppy-x3", "royal-canin-mini-puppy-x7-5"],
+  },
+  {
+    groupSlug: "royal-canin-mini-adulto",
+    displayName: "Royal Canin — Mini adulto",
+    variantSlugs: [
+      "royal-canin-mini-adulto-x1",
+      "royal-canin-mini-adult-x3",
+      "royal-canin-mini-adulto-8-x3",
+      "royal-canin-adulto-mini-12-x3",
+      "royal-canin-mini-adulto-x7-5",
+    ],
+  },
+  {
+    groupSlug: "royal-canin-maxi-adulto",
+    displayName: "Royal Canin — Maxi adulto",
+    variantSlugs: ["royal-canin-maxi-adulto-x15"],
+  },
+  {
+    groupSlug: "excellent-adulto",
+    displayName: "Excellent — Adulto",
+    variantSlugs: ["excellent-adulto-perro-x1"],
+  },
+  {
+    groupSlug: "excellent-puppy",
+    displayName: "Excellent — Puppy",
+    variantSlugs: ["excellent-puppy-x1"],
+  },
+  {
+    groupSlug: "excellent-adulto-mantenimiento",
+    displayName: "Excellent — Adulto mantenimiento",
+    variantSlugs: ["excellent-adulto-mantenimiento-x20"],
+  },
+  {
+    groupSlug: "excellent-adulto-small",
+    displayName: "Excellent — Adulto small",
+    variantSlugs: ["excellent-adulto-small-x3"],
+  },
+  {
+    groupSlug: "excellent-puppy-small",
+    displayName: "Excellent — Puppy small",
+    variantSlugs: ["excellent-puppy-small-x3"],
+  },
+  {
+    groupSlug: "dog-chow-adulto",
+    displayName: "Dog Chow — Adulto",
+    variantSlugs: ["dog-chow-adulto-x21"],
+  },
+  {
+    groupSlug: "dogui-adulto",
+    displayName: "Dogui — Adulto",
+    variantSlugs: ["dogui-adulto-x21"],
+  },
+  {
+    groupSlug: "capitan-adulto",
+    displayName: "Capitan — Adulto",
+    variantSlugs: ["capitan-adulto-x22"],
+  },
+  {
+    groupSlug: "prince-adulto",
+    displayName: "Dog Prince — Adulto",
+    variantSlugs: ["dog-prince-adulto-x15", "dog-prince-adulto-x22"],
+  },
+  {
+    groupSlug: "zimpi-adulto",
+    displayName: "Zimpi — Adulto",
+    variantSlugs: ["zimpi-adulto-x25"],
+  },
+  {
+    groupSlug: "ganacan-adulto",
+    displayName: "Ganacan — Adulto",
+    variantSlugs: ["ganacan-adulto-x25"],
+  },
+  {
+    groupSlug: "odwalla-adulto",
+    displayName: "Odwalla — Adulto",
+    variantSlugs: ["odwalla-adulto-x25"],
+  },
+  {
+    groupSlug: "has-cachorro",
+    displayName: "HAS — Cachorro",
+    variantSlugs: ["has-cachorro-x10"],
+  },
+  {
+    groupSlug: "biohas-adulto",
+    displayName: "Biohas — Adulto",
+    variantSlugs: ["biohas-adulto-x20"],
+  },
+  {
+    groupSlug: "chasque-adulto",
+    displayName: "Chasque — Adulto",
+    variantSlugs: ["chasque-adulto-x20"],
+  },
+  {
+    groupSlug: "tigre-adulto",
+    displayName: "Tigre — Adulto",
+    variantSlugs: ["tigre-adulto-x22"],
+  },
+  {
+    groupSlug: "rey-can-adulto",
+    displayName: "Rey Can — Adulto",
+    variantSlugs: ["rey-can-adulto-x22"],
+  },
+  {
+    groupSlug: "rey-can-rp",
+    displayName: "Rey Can — Raza pequeña",
+    variantSlugs: ["rey-can-rp-x15", "rey-can-rp-x8"],
+  },
+  {
+    groupSlug: "simpli-adulto",
+    displayName: "Simpli — Adulto",
+    variantSlugs: ["simpli-adulto-x22"],
+  },
+  {
+    groupSlug: "gandum-adulto",
+    displayName: "Gandum — Adulto",
+    variantSlugs: ["gandum-adulto-x20"],
+  },
+  {
+    groupSlug: "pupy-food-adulto",
+    displayName: "Puppy Food — Adulto",
+    variantSlugs: ["puppy-food-adulto-x20"],
+  },
+  {
+    groupSlug: "upper-urinary",
+    displayName: "Upper — Urinary",
+    variantSlugs: ["upper-urinary-x1-5"],
+  },
+  {
+    groupSlug: "misterper-adulto",
+    displayName: "Misterper — Adulto",
+    variantSlugs: ["misterper-adulto-x20"],
+  },
+  {
+    groupSlug: "biopet-adulto",
+    displayName: "Biopet — Adulto",
+    variantSlugs: ["biopet-adulto-x20"],
+  },
+  {
+    groupSlug: "estampa-adulto",
+    displayName: "Estampa — Adulto",
+    variantSlugs: ["estampa-adulto-x20"],
+  },
+  {
+    groupSlug: "estampa-cachorro",
+    displayName: "Estampa — Cachorro",
+    variantSlugs: ["estampa-cachorro-x15"],
+  },
+  {
+    groupSlug: "estampa-adulto-rp",
+    displayName: "Estampa — Adulto (raza pequeña)",
+    variantSlugs: ["estampa-adulto-rp-x15"],
+  },
+  {
+    groupSlug: "total-khan-adulto",
+    displayName: "Total Khan — Adulto",
+    variantSlugs: ["total-khan-adulto-x20"],
+  },
 ];
 
 const groupBySlug = new Map(PRODUCT_GROUPS.map((g) => [g.groupSlug, g] as const));
