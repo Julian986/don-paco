@@ -16,6 +16,8 @@ type ProductGroupDetailViewProps = {
 
 export default function ProductGroupDetailView({ group, relatedProducts }: ProductGroupDetailViewProps) {
   const categoryLabel = categoryBadgeLabel(group.categoryId);
+  const useContainedImage =
+    group.categoryId.includes("alimento-humedo") || group.categoryId.includes("alimento-snacks");
 
   return (
     <main className="min-h-screen bg-white text-[#3f3f3f]">
@@ -57,7 +59,7 @@ export default function ProductGroupDetailView({ group, relatedProducts }: Produ
                     src={group.imageSrc}
                     alt={group.displayName}
                     fill
-                    className="object-cover"
+                    className={useContainedImage ? "object-contain p-4" : "object-cover"}
                     priority
                     sizes="(max-width: 1024px) 100vw, 640px"
                   />

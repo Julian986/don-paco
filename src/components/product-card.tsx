@@ -17,6 +17,8 @@ type ProductCardProps = {
 export default function ProductCard({ product, showPetAudience }: ProductCardProps) {
   const { addItem } = useCart();
   const router = useRouter();
+  const useContainedImage =
+    product.categoryId.includes("alimento-humedo") || product.categoryId.includes("alimento-snacks");
 
   const goToDetail = () => {
     router.push(`/productos/${product.slug}`);
@@ -57,7 +59,7 @@ export default function ProductCard({ product, showPetAudience }: ProductCardPro
             src={product.imageSrc}
             alt={product.name}
             fill
-            className="object-cover"
+            className={useContainedImage ? "object-contain p-3" : "object-cover"}
             sizes="(max-width: 640px) 50vw, 280px"
           />
         ) : (

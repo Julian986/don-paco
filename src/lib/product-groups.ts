@@ -250,6 +250,56 @@ export const PRODUCT_GROUPS: readonly ProductGroupDefinition[] = [
     variantSlugs: ["pedigree-senior-x8"],
   },
   {
+    groupSlug: "pedigree-dentastix",
+    displayName: "Pedigree — Dentastix",
+    variantSlugs: ["pedigree-dentastix-x1", "pedigree-dentastix-x3", "pedigree-dentastix-x7"],
+  },
+  {
+    groupSlug: "pedigree-rodeo",
+    displayName: "Pedigree — Rodeo",
+    variantSlugs: ["pedigree-rodeo"],
+  },
+  {
+    groupSlug: "pedigree-biscrok",
+    displayName: "Pedigree — Biscrok",
+    variantSlugs: ["pedigree-biscrok-chico", "pedigree-biscrok-grande"],
+  },
+  {
+    groupSlug: "agility-derma",
+    displayName: "Agility — Derma",
+    variantSlugs: ["agility-derma-x3", "agility-derma-x15"],
+  },
+  {
+    groupSlug: "royal-canin-urinary-perro",
+    displayName: "Royal Canin — Urinary perro",
+    variantSlugs: ["royal-canin-urinary-perro-x1-5"],
+  },
+  {
+    groupSlug: "royal-canin-hypoallergenic",
+    displayName: "Royal Canin — Hypoallergenic",
+    variantSlugs: ["royal-canin-hypoallergenic-x2"],
+  },
+  {
+    groupSlug: "royal-canin-renal-perro",
+    displayName: "Royal Canin — Renal perro",
+    variantSlugs: ["royal-canin-renal-perro-x2"],
+  },
+  {
+    groupSlug: "royal-canin-mobily",
+    displayName: "Royal Canin — Mobily",
+    variantSlugs: ["royal-canin-mobily-x2"],
+  },
+  {
+    groupSlug: "royal-canin-cardiac",
+    displayName: "Royal Canin — Cardiac",
+    variantSlugs: ["royal-canin-cardiac-x2"],
+  },
+  {
+    groupSlug: "royal-canin-gastro",
+    displayName: "Royal Canin — Gastro",
+    variantSlugs: ["royal-canin-gastro-x2"],
+  },
+  {
     groupSlug: "pampa-adulto-raz-peq",
     displayName: "Pampa — Adulto (raza pequeña)",
     variantSlugs: ["pampa-adulto-rp-x15"],
@@ -439,6 +489,171 @@ export const PRODUCT_GROUPS: readonly ProductGroupDefinition[] = [
     groupSlug: "total-khan-adulto",
     displayName: "Total Khan — Adulto",
     variantSlugs: ["total-khan-adulto-x20"],
+  },
+  {
+    groupSlug: "sieger-gato-kitten",
+    displayName: "Sieger — Kitten gato",
+    variantSlugs: ["sieger-kitten-x1"],
+  },
+  {
+    groupSlug: "sieger-gato-sterilized",
+    displayName: "Sieger — Sterilized gato",
+    variantSlugs: ["sieger-sterilized-x1"],
+  },
+  {
+    groupSlug: "sieger-gato-adulto",
+    displayName: "Sieger — Adulto gato",
+    variantSlugs: ["sieger-adulto-gato-x1"],
+  },
+  {
+    groupSlug: "sieger-gato",
+    displayName: "Sieger — Gato (bolsa grande)",
+    variantSlugs: ["sieger-gato-x10"],
+  },
+  {
+    groupSlug: "maxxium-gato",
+    displayName: "Maxxium — Gato",
+    variantSlugs: ["maxxium-gato-x1"],
+  },
+  {
+    groupSlug: "agility-gato-kitten",
+    displayName: "Agility — Kitten gato",
+    variantSlugs: ["agility-kitten-x1-5", "agility-kitten-x10"],
+  },
+  {
+    groupSlug: "agility-gato-adulto",
+    displayName: "Agility — Adulto gato",
+    variantSlugs: ["agility-gato-adulto-x1-5", "agility-gato-adulto-x10"],
+  },
+  {
+    groupSlug: "bocato-gato",
+    displayName: "Bocato — Gato",
+    variantSlugs: ["bocato-gato-x10"],
+  },
+  {
+    groupSlug: "maxi-cat-gato",
+    displayName: "Maxi Cat — Gato",
+    variantSlugs: ["maxi-cat-gato-x10"],
+  },
+  {
+    groupSlug: "old-prince-gato-cordero",
+    displayName: "Old Prince — Cordero (kitten / adulto)",
+    variantSlugs: ["old-prince-kitten-cordero-x3", "old-prince-gato-cordero-x3"],
+  },
+  {
+    groupSlug: "old-prince-gato-esterilizado",
+    displayName: "Old Prince — Esterilizado",
+    variantSlugs: ["old-prince-gato-esterilizado-x3"],
+  },
+  {
+    groupSlug: "old-prince-gato-premium",
+    displayName: "Old Prince — Premium",
+    variantSlugs: ["old-prince-gato-premium-x3"],
+  },
+  {
+    groupSlug: "optimun-gato",
+    displayName: "Optimun — Gato",
+    variantSlugs: ["optimun-kitten-x1", "optimun-gato-x3"],
+  },
+  {
+    groupSlug: "optimun-gato-castrado",
+    displayName: "Optimun — Castrado",
+    variantSlugs: ["optimun-castrado-x3"],
+  },
+  {
+    groupSlug: "eukanuba-gato",
+    displayName: "Eukanuba — Gato",
+    variantSlugs: ["eukanuba-gato-x1-5", "eukanuba-gato-x3"],
+  },
+  {
+    groupSlug: "eukanuba-kitten",
+    displayName: "Eukanuba — Kitten",
+    variantSlugs: ["eukanuba-kitten-x1-5", "eukanuba-kitten-x3"],
+  },
+  {
+    groupSlug: "whiskas-gato",
+    displayName: "Whiskas — Gato",
+    variantSlugs: ["whiskas-gato-x10"],
+  },
+  {
+    groupSlug: "company-gato",
+    displayName: "Company — Gato",
+    variantSlugs: ["company-gato-x3"],
+  },
+  {
+    groupSlug: "company-kitten",
+    displayName: "Company — Kitten",
+    variantSlugs: ["company-kitten-x3"],
+  },
+  {
+    groupSlug: "livra-gato",
+    displayName: "Livra — Gato",
+    variantSlugs: ["livra-gato-x3"],
+  },
+  {
+    groupSlug: "royal-canin-baby-cat",
+    displayName: "Royal Canin — Baby cat",
+    variantSlugs: ["royal-canin-baby-cat-x1-5"],
+  },
+  {
+    groupSlug: "royal-canin-kitten",
+    displayName: "Royal Canin — Kitten",
+    variantSlugs: ["royal-canin-kitten-x1-5"],
+  },
+  {
+    groupSlug: "royal-canin-indoor",
+    displayName: "Royal Canin — Indoor",
+    variantSlugs: ["royal-canin-indoor-x1-5", "royal-canin-indoor-7-x1-5"],
+  },
+  {
+    groupSlug: "royal-canin-active-gato",
+    displayName: "Royal Canin — Active gato",
+    variantSlugs: ["royal-canin-active-gato-x1-5"],
+  },
+  {
+    groupSlug: "royal-canin-fit-32",
+    displayName: "Royal Canin — Fit 32",
+    variantSlugs: ["royal-canin-fit-32-x1-5"],
+  },
+  {
+    groupSlug: "excellent-gato",
+    displayName: "Excellent — Gato",
+    variantSlugs: ["excellent-gato-x1", "excellent-gato-x3", "excellent-gato-x7-5"],
+  },
+  {
+    groupSlug: "excellent-steriliced",
+    displayName: "Excellent — Steriliced",
+    variantSlugs: ["excellent-steriliced-x1", "excellent-steriliced-x7-5"],
+  },
+  {
+    groupSlug: "excellent-kitten",
+    displayName: "Excellent — Kitten",
+    variantSlugs: ["excellent-kitten-x1", "excellent-kitten-x7-5"],
+  },
+  {
+    groupSlug: "capitan-gato",
+    displayName: "Capitan — Gato",
+    variantSlugs: ["capitan-gato-x10"],
+  },
+  {
+    groupSlug: "amici-gato",
+    displayName: "Amici — Gato",
+    variantSlugs: ["amici-gato-x10"],
+  },
+  {
+    groupSlug: "zimpi-gato",
+    displayName: "Zimpi — Gato",
+    variantSlugs: ["zimpi-gato-x10"],
+  },
+  {
+    groupSlug: "ganacat-gato",
+    displayName: "Ganacat — Gato",
+    variantSlugs: ["ganacat-gato-x10"],
+  },
+  {
+    groupSlug: "has-gato",
+    displayName: "HAS — Gato",
+    variantSlugs: ["has-gato-x10"],
   },
 ];
 

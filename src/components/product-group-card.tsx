@@ -14,6 +14,8 @@ type ProductGroupCardProps = {
 export default function ProductGroupCard({ entry, showPetAudience }: ProductGroupCardProps) {
   const router = useRouter();
   const href = `/productos/${entry.groupSlug}`;
+  const useContainedImage =
+    entry.categoryId.includes("alimento-humedo") || entry.categoryId.includes("alimento-snacks");
 
   const goToDetail = () => {
     router.push(href);
@@ -54,7 +56,7 @@ export default function ProductGroupCard({ entry, showPetAudience }: ProductGrou
             src={entry.imageSrc}
             alt={entry.displayName}
             fill
-            className="object-cover"
+            className={useContainedImage ? "object-contain p-3" : "object-cover"}
             sizes="(max-width: 640px) 50vw, 280px"
           />
         ) : (
