@@ -26,6 +26,7 @@ export function generateStaticParams() {
 
 export default async function ProductDetailPage({ params }: ProductDetailPageProps) {
   const { slug } = await params;
+  const extraZoomOutProductSlugs = new Set(["sieger-pouch-perro"]);
 
   const group = getGroupListingIfExists(slug);
   if (group) {
@@ -98,7 +99,11 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
                     alt={product.name}
                     width={720}
                     height={720}
-                    className="max-h-full w-auto max-w-full object-contain p-4"
+                    className={
+                      extraZoomOutProductSlugs.has(product.slug)
+                        ? "max-h-full w-auto max-w-full object-contain p-10"
+                        : "max-h-full w-auto max-w-full object-contain p-6"
+                    }
                     priority
                   />
                 ) : (

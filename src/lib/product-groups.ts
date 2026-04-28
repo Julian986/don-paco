@@ -655,6 +655,174 @@ export const PRODUCT_GROUPS: readonly ProductGroupDefinition[] = [
     displayName: "HAS — Gato",
     variantSlugs: ["has-gato-x10"],
   },
+  {
+    groupSlug: "maxxium-lata-gato",
+    displayName: "Maxxium — Lata gato",
+    variantSlugs: ["maxxium-lata-gato-grande", "maxxium-lata-gato-chica"],
+  },
+  {
+    groupSlug: "whiskas-snacks",
+    displayName: "Whiskas — Snacks",
+    variantSlugs: ["whiskas-snack-chico-40gr", "whiskas-snack-grande-80gr"],
+  },
+  {
+    groupSlug: "sieger-gato-urinary",
+    displayName: "Sieger — Urinary gato",
+    variantSlugs: ["sieger-urinary-x1"],
+  },
+  {
+    groupSlug: "agility-gato-urinary",
+    displayName: "Agility — Urinary gato",
+    variantSlugs: ["agility-urinary-x1-5", "agility-urinary-x10"],
+  },
+  {
+    groupSlug: "old-prince-gato-urinary",
+    displayName: "Old Prince — Urinary gato",
+    variantSlugs: ["old-prince-gato-urinary-x3"],
+  },
+  {
+    groupSlug: "royal-canin-urinary-gato",
+    displayName: "Royal Canin — Urinary gato",
+    variantSlugs: ["royal-canin-urinary-gato-x1-5"],
+  },
+  {
+    groupSlug: "royal-canin-hepatic-gato",
+    displayName: "Royal Canin — Hepatic gato",
+    variantSlugs: ["royal-canin-hepatic-gato-x2"],
+  },
+  {
+    groupSlug: "royal-canin-renal-gato",
+    displayName: "Royal Canin — Renal gato",
+    variantSlugs: ["royal-canin-renal-gato-x2"],
+  },
+  {
+    groupSlug: "royal-canin-gastro-gato",
+    displayName: "Royal Canin — Gastro gato",
+    variantSlugs: ["royal-canin-gastro-gato-x2"],
+  },
+  {
+    groupSlug: "excellent-urinary",
+    displayName: "Excellent — Urinary",
+    variantSlugs: ["excellent-urinary-x1", "excellent-urinary-x7-5"],
+  },
+  {
+    groupSlug: "collar-simple",
+    displayName: "Collares — Collar simple",
+    variantSlugs: [
+      "collares-collar-simple-talle-12",
+      "collares-collar-simple-talle-10",
+      "collares-collar-simple-talle-8",
+      "collares-collar-simple-talle-6",
+      "collares-collar-simple-talle-4",
+      "collares-collar-simple-talle-3",
+      "collares-collar-simple-talle-2",
+      "collares-collar-simple-talle-1",
+    ],
+  },
+  {
+    groupSlug: "collar-doble",
+    displayName: "Collares — Collar doble",
+    variantSlugs: [
+      "collares-collar-doble-talle-5",
+      "collares-collar-doble-talle-4",
+      "collares-collar-doble-talle-3",
+      "collares-collar-doble-talle-2",
+      "collares-collar-doble-talle-1",
+      "collares-collar-doble-talle-0",
+    ],
+  },
+  {
+    groupSlug: "collar-nato",
+    displayName: "Collares — Collar NATO",
+    variantSlugs: [
+      "collares-collar-nato-talle-30-mm",
+      "collares-collar-nato-talle-40-mm",
+      "collares-collar-nato-talle-60-mm",
+      "collares-nato-con-broche-talle",
+    ],
+  },
+  {
+    groupSlug: "correa-sola",
+    displayName: "Collares — Correa sola",
+    variantSlugs: [
+      "collares-correa-sola-talle-chica",
+      "collares-correa-sola-talle-mediana",
+      "collares-correa-sola-talle-grande",
+    ],
+  },
+  {
+    groupSlug: "bozal-rejilla",
+    displayName: "Accesorios — Bozal rejilla",
+    variantSlugs: [
+      "accesorios-bozal-rejilla-talle-1",
+      "accesorios-bozal-rejilla-talle-2",
+      "accesorios-bozal-rejilla-talle-3",
+      "accesorios-bozal-rejilla-talle-4",
+      "accesorios-bozal-rejilla-talle-5",
+      "accesorios-bozal-rejilla-talle-6",
+      "accesorios-bozal-rejilla-talle-7",
+    ],
+  },
+  {
+    groupSlug: "bozal-nylon",
+    displayName: "Accesorios — Bozal nylon",
+    variantSlugs: ["accesorios-bozal-nylon"],
+  },
+  {
+    groupSlug: "bozal-silicona",
+    displayName: "Accesorios — Bozal silicona",
+    variantSlugs: ["accesorios-bozal-silicona"],
+  },
+  {
+    groupSlug: "bozal-cuero",
+    displayName: "Accesorios — Bozal cuero",
+    variantSlugs: ["accesorios-bozal-cuero"],
+  },
+  {
+    groupSlug: "viruta",
+    displayName: "Accesorios — Viruta",
+    variantSlugs: ["accesorios-viruta"],
+  },
+  {
+    groupSlug: "litera",
+    displayName: "Accesorios — Litera",
+    variantSlugs: ["accesorios-litera-chica", "accesorios-litera-mediana", "accesorios-litera-grande"],
+  },
+  {
+    groupSlug: "kit-litera",
+    displayName: "Accesorios — Kit litera",
+    variantSlugs: ["accesorios-kit-litera"],
+  },
+  {
+    groupSlug: "bombacha-higienica-negra",
+    displayName: "Accesorios — Bombacha higiénica negra",
+    variantSlugs: ["accesorios-bombacha-higienica-negra"],
+  },
+  {
+    groupSlug: "bombacha-con-puntilla",
+    displayName: "Accesorios — Bombacha con puntilla",
+    variantSlugs: ["accesorios-bombacha-con-puntilla"],
+  },
+  {
+    groupSlug: "polar-perro-talles1-12",
+    displayName: "Ropa — Polar perro talles 1-12",
+    variantSlugs: ["ropa-polar-perro-talles-1-12-desde-6-000-a-15-700-segun-talle"],
+  },
+  {
+    groupSlug: "plush-con-corderito",
+    displayName: "Ropa — Plush con corderito",
+    variantSlugs: ["ropa-plush-con-corderito-talles-25-85-desde-13-500-a-43-900"],
+  },
+  {
+    groupSlug: "soft-plus",
+    displayName: "Ropa — Soft Plus",
+    variantSlugs: ["ropa-soft-plus-talles-0-6-desde-13-000-a-20-000"],
+  },
+  {
+    groupSlug: "matelase",
+    displayName: "Ropa — Matelase",
+    variantSlugs: ["ropa-matelase-talles-2-10-desde-14-000-a-39-000"],
+  },
 ];
 
 const groupBySlug = new Map(PRODUCT_GROUPS.map((g) => [g.groupSlug, g] as const));

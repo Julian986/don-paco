@@ -14,8 +14,13 @@ type ProductGroupCardProps = {
 export default function ProductGroupCard({ entry, showPetAudience }: ProductGroupCardProps) {
   const router = useRouter();
   const href = `/productos/${entry.groupSlug}`;
-  const useContainedImage =
-    entry.categoryId.includes("alimento-humedo") || entry.categoryId.includes("alimento-snacks");
+  const zoomOutGroupSlugs = new Set(["sieger-gato-kitten"]);
+  const zoomInGroupSlugs = new Set(["agility-adulto", "agility-cordero", "agility-adulto-raza-peq"]);
+  const imageFitClass = zoomOutGroupSlugs.has(entry.groupSlug)
+    ? "object-contain p-6"
+    : zoomInGroupSlugs.has(entry.groupSlug)
+      ? "object-contain p-2"
+      : "object-contain p-4";
 
   const goToDetail = () => {
     router.push(href);
@@ -43,20 +48,12 @@ export default function ProductGroupCard({ entry, showPetAudience }: ProductGrou
       aria-label={`${showPetAudience ? `${petAudienceShortLabel(entry.categoryId)} · ` : ""}Ver opciones de ${entry.displayName}`}
     >
       <div className="relative aspect-[5/6] w-full shrink-0 bg-white sm:aspect-[4/5]">
-        <div className="pointer-events-none absolute left-2 right-2 top-2 z-10 flex items-start justify-between gap-1.5 sm:left-2.5 sm:right-2.5 sm:top-2.5">
-          <span className="rounded-full bg-[#e4077d] px-1.5 py-0.5 text-[9px] font-bold uppercase text-white shadow-sm sm:px-2 sm:py-1 sm:text-[11px]">
-            2x1
-          </span>
-          <span className="rounded-full bg-[#029f9c] px-1.5 py-0.5 text-[9px] font-bold uppercase text-white shadow-sm sm:px-2 sm:py-1 sm:text-[11px]">
-            Envio gratis
-          </span>
-        </div>
         {entry.imageSrc ? (
           <Image
             src={entry.imageSrc}
             alt={entry.displayName}
             fill
-            className={useContainedImage ? "object-contain p-3" : "object-cover"}
+            className={imageFitClass}
             sizes="(max-width: 640px) 50vw, 280px"
           />
         ) : (
@@ -83,6 +80,9 @@ export default function ProductGroupCard({ entry, showPetAudience }: ProductGrou
         <p className="text-base font-black text-[#029f9c] sm:text-xl">Desde {formatArs(entry.fromPrice)}</p>
         <p className="mb-3 text-[11px] text-[#888] sm:mb-4 sm:text-sm">
           Desde {formatArs(entry.fromCashPrice)} efectivo o transferencia
+        </p>
+        <p className="mb-3 text-[10px] font-semibold uppercase tracking-wide text-[#e4077d] sm:text-[11px]">
+          Consultá promo en el local
         </p>
         <div className="mt-auto flex flex-col gap-1.5 sm:flex-row sm:gap-2">
           <Link

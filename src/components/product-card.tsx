@@ -17,8 +17,8 @@ type ProductCardProps = {
 export default function ProductCard({ product, showPetAudience }: ProductCardProps) {
   const { addItem } = useCart();
   const router = useRouter();
-  const useContainedImage =
-    product.categoryId.includes("alimento-humedo") || product.categoryId.includes("alimento-snacks");
+  const extraZoomOutProductSlugs = new Set(["sieger-pouch-perro"]);
+  const imageFitClass = extraZoomOutProductSlugs.has(product.slug) ? "object-contain p-7" : "object-contain p-4";
 
   const goToDetail = () => {
     router.push(`/productos/${product.slug}`);
@@ -46,20 +46,12 @@ export default function ProductCard({ product, showPetAudience }: ProductCardPro
       aria-label={`${showPetAudience ? `${petAudienceShortLabel(product.categoryId)} · ` : ""}Ver detalle de ${product.name}`}
     >
       <div className="relative aspect-[5/6] w-full shrink-0 bg-white sm:aspect-[4/5]">
-        <div className="pointer-events-none absolute left-2 right-2 top-2 z-10 flex items-start justify-between gap-1.5 sm:left-2.5 sm:right-2.5 sm:top-2.5">
-          <span className="rounded-full bg-[#e4077d] px-1.5 py-0.5 text-[9px] font-bold uppercase text-white shadow-sm sm:px-2 sm:py-1 sm:text-[11px]">
-            2x1
-          </span>
-          <span className="rounded-full bg-[#029f9c] px-1.5 py-0.5 text-[9px] font-bold uppercase text-white shadow-sm sm:px-2 sm:py-1 sm:text-[11px]">
-            Envio gratis
-          </span>
-        </div>
         {product.imageSrc ? (
           <Image
             src={product.imageSrc}
             alt={product.name}
             fill
-            className={useContainedImage ? "object-contain p-3" : "object-cover"}
+            className={imageFitClass}
             sizes="(max-width: 640px) 50vw, 280px"
           />
         ) : (
@@ -83,6 +75,9 @@ export default function ProductCard({ product, showPetAudience }: ProductCardPro
         <p className="text-base font-black text-[#029f9c] sm:text-xl">{formatArs(product.price)}</p>
         <p className="mb-3 text-[11px] text-[#888] sm:mb-4 sm:text-sm">
           {formatArs(product.cashPrice)} efectivo o transferencia
+        </p>
+        <p className="mb-3 text-[10px] font-semibold uppercase tracking-wide text-[#e4077d] sm:text-[11px]">
+          Consultá promo en el local
         </p>
         <div className="mt-auto flex flex-col gap-1.5 sm:flex-row sm:gap-2">
           <button

@@ -16,8 +16,13 @@ type ProductGroupDetailViewProps = {
 
 export default function ProductGroupDetailView({ group, relatedProducts }: ProductGroupDetailViewProps) {
   const categoryLabel = categoryBadgeLabel(group.categoryId);
-  const useContainedImage =
-    group.categoryId.includes("alimento-humedo") || group.categoryId.includes("alimento-snacks");
+  const zoomOutGroupSlugs = new Set(["sieger-gato-kitten"]);
+  const zoomInGroupSlugs = new Set(["agility-adulto", "agility-cordero", "agility-adulto-raza-peq"]);
+  const imageFitClass = zoomOutGroupSlugs.has(group.groupSlug)
+    ? "object-contain p-7"
+    : zoomInGroupSlugs.has(group.groupSlug)
+      ? "object-contain p-3"
+      : "object-contain p-5";
 
   return (
     <main className="min-h-screen bg-white text-[#3f3f3f]">
@@ -59,7 +64,7 @@ export default function ProductGroupDetailView({ group, relatedProducts }: Produ
                     src={group.imageSrc}
                     alt={group.displayName}
                     fill
-                    className={useContainedImage ? "object-contain p-4" : "object-cover"}
+                    className={imageFitClass}
                     priority
                     sizes="(max-width: 1024px) 100vw, 640px"
                   />
