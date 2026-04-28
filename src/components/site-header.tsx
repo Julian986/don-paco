@@ -36,6 +36,7 @@ export default function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-20 shadow-sm">
+      {/*
       <div className="bg-[#e4077d]">
         <div className="grid w-full grid-cols-1 items-center px-3 py-1.5 md:grid-cols-[1fr_auto_1fr] md:px-4 md:pl-16 min-[1810px]:md:pl-28">
           <div className="hidden items-center gap-2 text-white md:flex">
@@ -62,6 +63,7 @@ export default function SiteHeader() {
           <div className="hidden md:block" />
         </div>
       </div>
+      */}
 
       <div className="bg-[#029f9c] text-white">
         <div className="mx-auto w-full max-w-[1500px] px-2 py-3 md:px-4 md:pl-16 min-[1810px]:md:pl-28">
