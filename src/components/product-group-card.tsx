@@ -22,9 +22,7 @@ export default function ProductGroupCard({ entry, showPetAudience }: ProductGrou
       ? "object-contain p-2"
       : "object-contain p-4";
 
-  const goToDetail = () => {
-    router.push(href);
-  };
+  const goToDetail = () => router.push(href);
 
   const handleCardClick = (event: React.MouseEvent<HTMLElement>) => {
     const target = event.target as HTMLElement;
@@ -72,30 +70,30 @@ export default function ProductGroupCard({ entry, showPetAudience }: ProductGrou
         <p className="mb-1 text-[10px] font-bold uppercase tracking-wide text-[#029f9c]">
           Varias presentaciones
         </p>
-        <h4 className="mb-1 min-h-[2.4rem] text-[13px] font-extrabold uppercase leading-tight text-[#777] sm:mb-2 sm:min-h-[3rem] sm:text-base">
+        <h4 className="mb-2 min-h-[2.4rem] text-[13px] font-extrabold uppercase leading-tight text-[#777] sm:min-h-[3rem] sm:text-base">
           <Link href={href} className="transition-colors hover:text-[#029f9c]">
             {entry.displayName}
           </Link>
         </h4>
-        <p className="text-base font-black text-[#029f9c] sm:text-xl">Desde {formatArs(entry.fromPrice)}</p>
-        <p className="mb-3 text-[11px] text-[#888] sm:mb-4 sm:text-sm">
-          Desde {formatArs(entry.fromCashPrice)} efectivo o transferencia
-        </p>
-        <p className="mb-3 text-[10px] font-semibold uppercase tracking-wide text-[#e4077d] sm:text-[11px]">
-          Consultá promo en el local
-        </p>
-        <div className="mt-auto flex flex-col gap-1.5 sm:flex-row sm:gap-2">
+
+        {/* Precios */}
+        <div className="mb-3">
+          <p className="text-base font-black text-[#029f9c] sm:text-xl">Desde {formatArs(entry.fromPrice)}</p>
+          <p className="text-[11px] text-[#888] sm:text-sm">
+            Desde {formatArs(entry.fromCashPrice)} efectivo o transferencia
+          </p>
+        </div>
+
+        {/* CTA único */}
+        <div className="mt-auto">
           <Link
             href={href}
-            className="flex-1 rounded-md bg-[#029f9c] px-3 py-2 text-center text-[11px] font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#028785] sm:text-xs"
+            className="flex w-full items-center justify-center gap-1.5 rounded-md bg-[#029f9c] px-3 py-2 text-[11px] font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#028785] sm:text-xs"
           >
-            Elegir formato
-          </Link>
-          <Link
-            href={href}
-            className="rounded-md border border-[#e4077d] px-3 py-2 text-center text-[11px] font-bold uppercase tracking-wide text-[#e4077d] transition-colors hover:bg-[#e4077d] hover:text-white sm:text-xs"
-          >
-            Ver
+            Ver opciones
+            <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
+              <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 0 1 .02-1.06L11.168 10 7.23 6.29a.75.75 0 1 1 1.04-1.08l4.5 4.25a.75.75 0 0 1 0 1.08l-4.5 4.25a.75.75 0 0 1-1.06-.02Z" clipRule="evenodd" />
+            </svg>
           </Link>
         </div>
       </div>

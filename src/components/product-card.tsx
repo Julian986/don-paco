@@ -10,7 +10,6 @@ import { formatArs, type Product } from "@/lib/products";
 
 type ProductCardProps = {
   product: Product;
-  /** En vista "Todas" ayuda a ver si es perro, gato, etc. */
   showPetAudience?: boolean;
 };
 
@@ -20,9 +19,12 @@ export default function ProductCard({ product, showPetAudience }: ProductCardPro
   const extraZoomOutProductSlugs = new Set(["sieger-pouch-perro"]);
   const imageFitClass = extraZoomOutProductSlugs.has(product.slug) ? "object-contain p-7" : "object-contain p-4";
 
-  const goToDetail = () => {
-    router.push(`/productos/${product.slug}`);
-  };
+  const discountPct =
+    product.precioLista > 0 && product.price < product.precioLista
+      ? Math.round(((product.precioLista - product.price) / product.precioLista) * 100)
+      : 0;
+
+  const goToDetail = () => router.push(`/productos/${product.slug}`);
 
   const handleCardClick = (event: React.MouseEvent<HTMLElement>) => {
     const target = event.target as HTMLElement;
@@ -46,6 +48,11 @@ export default function ProductCard({ product, showPetAudience }: ProductCardPro
       aria-label={`${showPetAudience ? `${petAudienceShortLabel(product.categoryId)} · ` : ""}Ver detalle de ${product.name}`}
     >
       <div className="relative aspect-[5/6] w-full shrink-0 bg-white sm:aspect-[4/5]">
+        {discountPct > 0 && (
+          <span className="absolute left-2 top-2 z-10 rounded-full bg-[#e4077d] px-2 py-0.5 text-[10px] font-bold uppercase text-white shadow-sm">
+            -{discountPct}%
+          </span>
+        )}
         {product.imageSrc ? (
           <Image
             src={product.imageSrc}
@@ -67,18 +74,26 @@ export default function ProductCard({ product, showPetAudience }: ProductCardPro
             {petAudienceShortLabel(product.categoryId)}
           </p>
         ) : null}
-        <h4 className="mb-1 min-h-[2.4rem] text-[13px] font-extrabold uppercase leading-tight text-[#777] sm:mb-2 sm:min-h-[3rem] sm:text-base">
+        <h4 className="mb-2 min-h-[2.4rem] text-[13px] font-extrabold uppercase leading-tight text-[#777] sm:min-h-[3rem] sm:text-base">
           <Link href={`/productos/${product.slug}`} className="transition-colors hover:text-[#029f9c]">
             {product.name}
           </Link>
         </h4>
-        <p className="text-base font-black text-[#029f9c] sm:text-xl">{formatArs(product.price)}</p>
-        <p className="mb-3 text-[11px] text-[#888] sm:mb-4 sm:text-sm">
-          {formatArs(product.cashPrice)} efectivo o transferencia
-        </p>
-        <p className="mb-3 text-[10px] font-semibold uppercase tracking-wide text-[#e4077d] sm:text-[11px]">
-          Consultá promo en el local
-        </p>
+
+        {/* Precios */}
+        <div className="mb-3">
+          <p className="text-base font-black text-[#029f9c] sm:text-xl">{formatArs(product.price)}</p>
+          <p className="text-[11px] text-[#888] sm:text-sm">
+            {formatArs(product.cashPrice)} efectivo o transferencia
+          </p>
+          {discountPct > 0 && (
+            <p className="mt-0.5 text-[11px] text-[#b0b0b0] line-through">
+              Antes: {formatArs(product.precioLista)}
+            </p>
+          )}
+        </div>
+
+        {/* Botón siempre visible */}
         <div className="mt-auto flex flex-col gap-1.5 sm:flex-row sm:gap-2">
           <button
             type="button"
@@ -91,7 +106,7 @@ export default function ProductCard({ product, showPetAudience }: ProductCardPro
             }
             className="flex-1 rounded-md bg-[#029f9c] px-3 py-2 text-[11px] font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#028785] sm:text-xs"
           >
-            Comprar
+            Agregar al carrito
           </button>
           <Link
             href={`/productos/${product.slug}`}

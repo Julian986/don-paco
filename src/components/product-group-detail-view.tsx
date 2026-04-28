@@ -7,6 +7,9 @@ import SiteHeader from "@/components/site-header";
 import { categoryBadgeLabel } from "@/lib/category-tree";
 import { formatArs, getDetailHrefForProductSlug, type ListingEntry, type Product } from "@/lib/products";
 
+const WA_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP ?? "5492984000000";
+const ADDRESS = process.env.NEXT_PUBLIC_LOCAL_ADDRESS ?? "Roca 473, Gral. Fernández Oro — RN";
+
 type GroupModel = Extract<ListingEntry, { type: "group" }>;
 
 type ProductGroupDetailViewProps = {
@@ -16,6 +19,7 @@ type ProductGroupDetailViewProps = {
 
 export default function ProductGroupDetailView({ group, relatedProducts }: ProductGroupDetailViewProps) {
   const categoryLabel = categoryBadgeLabel(group.categoryId);
+  const waHref = `https://wa.me/${WA_NUMBER}?text=Hola!%20Quiero%20consultar%20sobre%20${encodeURIComponent(group.displayName)}.`;
   const zoomOutGroupSlugs = new Set(["sieger-gato-kitten"]);
   const zoomInGroupSlugs = new Set(["agility-adulto", "agility-cordero", "agility-adulto-raza-peq"]);
   const imageFitClass = zoomOutGroupSlugs.has(group.groupSlug)
@@ -50,14 +54,6 @@ export default function ProductGroupDetailView({ group, relatedProducts }: Produ
         <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
           <div>
             <div className="relative mb-4 overflow-hidden rounded-2xl border border-[#e6e6e6] bg-white">
-              <div className="pointer-events-none absolute left-4 right-4 top-4 z-10 flex items-start justify-between gap-2">
-                <span className="rounded-full bg-[#e4077d] px-2 py-1 text-[11px] font-bold uppercase text-white shadow-sm">
-                  2x1
-                </span>
-                <span className="rounded-full bg-[#029f9c] px-2 py-1 text-[11px] font-bold uppercase text-white shadow-sm">
-                  Envio gratis
-                </span>
-              </div>
               <div className="relative aspect-[4/5] w-full sm:aspect-[5/6] md:min-h-[360px]">
                 {group.imageSrc ? (
                   <Image
@@ -97,6 +93,44 @@ export default function ProductGroupDetailView({ group, relatedProducts }: Produ
 
             <h2 className="text-sm font-extrabold uppercase tracking-wider text-[#029f9c]">Formatos</h2>
             <GroupVariantLines variants={group.variants} />
+
+            {/* Banner WhatsApp */}
+            <div className="mt-6 rounded-xl bg-[#f0fafa] border border-[#c8e8e6] p-4">
+              <p className="mb-3 text-[13px] font-semibold text-[#555]">
+                ¿Tenés dudas sobre este producto?
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <a
+                  href={waHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full bg-[#25d366] px-5 py-2.5 text-[13px] font-bold uppercase tracking-wide text-white shadow transition-all hover:scale-105"
+                >
+                  <svg viewBox="0 0 16 16" className="h-4 w-4 fill-current">
+                    <path d="M13.601 2.326A7.854 7.854 0 0 0 8.04 0C3.674 0 .12 3.554.12 7.92c0 1.398.365 2.762 1.057 3.965L0 16l4.235-1.11a7.902 7.902 0 0 0 3.805.968h.003c4.366 0 7.92-3.554 7.92-7.92a7.9 7.9 0 0 0-2.362-5.612Z" />
+                  </svg>
+                  Consultar por WhatsApp
+                </a>
+              </div>
+              <div className="mt-4 grid grid-cols-2 gap-3 text-[12px]">
+                <div className="flex items-center gap-1.5 text-[#555]">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#029f9c" strokeWidth="2" className="h-4 w-4 shrink-0">
+                    <rect x="1" y="3" width="15" height="13" rx="1" />
+                    <path d="M16 8h4l3 5v4h-7V8Z" />
+                    <circle cx="5.5" cy="18.5" r="2.5" />
+                    <circle cx="18.5" cy="18.5" r="2.5" />
+                  </svg>
+                  Envío en 24/72 hs.
+                </div>
+                <div className="flex items-center gap-1.5 text-[#555]">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#029f9c" strokeWidth="2" className="h-4 w-4 shrink-0">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7Z" />
+                    <circle cx="12" cy="9" r="2.5" />
+                  </svg>
+                  Retiro en {ADDRESS.split(",")[0]}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 

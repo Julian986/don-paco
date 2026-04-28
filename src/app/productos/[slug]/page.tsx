@@ -24,6 +24,9 @@ export function generateStaticParams() {
   return listAllProductPageSlugs().map((slug) => ({ slug }));
 }
 
+const WA_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP ?? "5492984000000";
+const LOCAL_ADDRESS = process.env.NEXT_PUBLIC_LOCAL_ADDRESS ?? "Roca 473, Gral. Fernández Oro — RN";
+
 export default async function ProductDetailPage({ params }: ProductDetailPageProps) {
   const { slug } = await params;
   const extraZoomOutProductSlugs = new Set(["sieger-pouch-perro"]);
@@ -62,6 +65,8 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
     })
     .slice(0, 3);
 
+  const waHref = `https://wa.me/${WA_NUMBER}?text=Hola!%20Quiero%20consultar%20sobre%20${encodeURIComponent(product.name)}.`;
+
   return (
     <main className="min-h-screen bg-white text-[#3f3f3f]">
       <SiteHeader />
@@ -88,10 +93,6 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
         <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
           <div>
             <div className="mb-4 rounded-2xl border border-[#e6e6e6] bg-gradient-to-br from-[#f6f6f6] to-[#ececec] p-6">
-              <div className="mb-3 flex items-center justify-between text-[11px] font-bold uppercase">
-                <span className="rounded-full bg-[#e4077d] px-2 py-1 text-white">2x1</span>
-                <span className="rounded-full bg-[#029f9c] px-2 py-1 text-white">Envio gratis</span>
-              </div>
               <div className="relative flex h-64 items-center justify-center rounded-xl bg-white/80 sm:h-80 md:h-[360px]">
                 {product.imageSrc ? (
                   <Image
@@ -169,15 +170,48 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
               sizes={product.sizes}
             />
 
+            {/* Info envío y retiro */}
             <div className="grid gap-3 text-sm text-[#666] sm:grid-cols-2">
-              <div className="rounded-lg border border-[#e4e4e4] bg-[#fafafa] p-3">
-                <p className="font-semibold text-[#555]">Envíos a todo el país</p>
-                <p className="mt-1 text-xs text-[#7d7d7d]">Recibí tu pedido en 24/72 hs.</p>
+              <div className="flex items-start gap-2 rounded-lg border border-[#e4e4e4] bg-[#fafafa] p-3">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#029f9c" strokeWidth="2" className="mt-0.5 h-4 w-4 shrink-0">
+                  <rect x="1" y="3" width="15" height="13" rx="1" />
+                  <path d="M16 8h4l3 5v4h-7V8Z" />
+                  <circle cx="5.5" cy="18.5" r="2.5" />
+                  <circle cx="18.5" cy="18.5" r="2.5" />
+                </svg>
+                <div>
+                  <p className="font-semibold text-[#555]">Envíos a todo el país</p>
+                  <p className="mt-0.5 text-xs text-[#7d7d7d]">Recibí tu pedido en 24/72 hs.</p>
+                </div>
               </div>
-              <div className="rounded-lg border border-[#e4e4e4] bg-[#fafafa] p-3">
-                <p className="font-semibold text-[#555]">Cambios garantizados</p>
-                <p className="mt-1 text-xs text-[#7d7d7d]">Tenés 30 días para cambios.</p>
+              <div className="flex items-start gap-2 rounded-lg border border-[#e4e4e4] bg-[#fafafa] p-3">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#029f9c" strokeWidth="2" className="mt-0.5 h-4 w-4 shrink-0">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7Z" />
+                  <circle cx="12" cy="9" r="2.5" />
+                </svg>
+                <div>
+                  <p className="font-semibold text-[#555]">Retiro sin costo</p>
+                  <p className="mt-0.5 text-xs text-[#7d7d7d]">{LOCAL_ADDRESS.split(",")[0]}</p>
+                </div>
               </div>
+            </div>
+
+            {/* Banner WhatsApp */}
+            <div className="mt-4 rounded-xl border border-[#c8e8e6] bg-[#f0fafa] p-4">
+              <p className="mb-3 text-[13px] font-semibold text-[#555]">
+                ¿Tenés alguna consulta sobre este producto?
+              </p>
+              <a
+                href={waHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-full bg-[#25d366] px-5 py-2.5 text-[13px] font-bold uppercase tracking-wide text-white shadow transition-all hover:scale-105"
+              >
+                <svg viewBox="0 0 16 16" className="h-4 w-4 fill-current">
+                  <path d="M13.601 2.326A7.854 7.854 0 0 0 8.04 0C3.674 0 .12 3.554.12 7.92c0 1.398.365 2.762 1.057 3.965L0 16l4.235-1.11a7.902 7.902 0 0 0 3.805.968h.003c4.366 0 7.92-3.554 7.92-7.92a7.9 7.9 0 0 0-2.362-5.612Z" />
+                </svg>
+                Consultar por WhatsApp
+              </a>
             </div>
           </div>
         </div>

@@ -8,6 +8,10 @@ import HeaderMenu from "@/components/header-menu";
 import PawIcon from "@/components/paw-icon";
 import { lockBodyScroll, unlockBodyScroll } from "@/lib/body-scroll-lock";
 
+const WA_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP ?? "5492984000000";
+const ADDRESS = process.env.NEXT_PUBLIC_LOCAL_ADDRESS ?? "Fernández Oro — RN";
+const HOURS = process.env.NEXT_PUBLIC_LOCAL_HOURS ?? "Lun-Sab 9:00-20:00";
+
 export default function SiteHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showDesktopLogo, setShowDesktopLogo] = useState(false);
@@ -16,58 +20,70 @@ export default function SiteHeader() {
   useEffect(() => {
     const mediaQuery = window.matchMedia("(min-width: 768px)");
     const updateViewport = () => setIsDesktopViewport(mediaQuery.matches);
-
     updateViewport();
     mediaQuery.addEventListener("change", updateViewport);
     return () => mediaQuery.removeEventListener("change", updateViewport);
   }, []);
 
   useEffect(() => {
-    if (isMobileMenuOpen) {
-      lockBodyScroll();
-    }
-
+    if (isMobileMenuOpen) lockBodyScroll();
     return () => {
-      if (isMobileMenuOpen) {
-        unlockBodyScroll();
-      }
+      if (isMobileMenuOpen) unlockBodyScroll();
     };
   }, [isMobileMenuOpen]);
 
+  const waHref = `https://wa.me/${WA_NUMBER}`;
+
   return (
     <header className="sticky top-0 z-20 shadow-sm">
-      {/*
-      <div className="bg-[#e4077d]">
-        <div className="grid w-full grid-cols-1 items-center px-3 py-1.5 md:grid-cols-[1fr_auto_1fr] md:px-4 md:pl-16 min-[1810px]:md:pl-28">
-          <div className="hidden items-center gap-2 text-white md:flex">
-            <a href="#" aria-label="Facebook" className="opacity-90 transition-opacity hover:opacity-100">
-              <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 fill-current">
-                <path d="M13.6 8.5V7.1c0-.7.5-.9.8-.9h2.1V3h-2.9c-3.2 0-3.9 2.4-3.9 4v1.5H7.8v3.5h1.9V21h3.9v-9h2.6l.4-3.5h-3z" />
+      {/* Barra superior de contacto */}
+      <div className="bg-[#e4077d] text-white">
+        <div className="mx-auto flex w-full max-w-[1500px] flex-wrap items-center justify-between gap-x-6 gap-y-1 px-4 py-1.5 md:px-6">
+          {/* Dirección + horario */}
+          <div className="hidden items-center gap-5 text-[11px] font-medium md:flex">
+            <span className="flex items-center gap-1.5">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-3.5 w-3.5 shrink-0">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7Z" />
+                <circle cx="12" cy="9" r="2.5" />
               </svg>
-            </a>
-            <a href="#" aria-label="Instagram" className="opacity-90 transition-opacity hover:opacity-100">
-              <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 fill-current">
-                <path d="M12 7.3A4.7 4.7 0 1 0 12 16.7 4.7 4.7 0 0 0 12 7.3Zm0 7.8A3.1 3.1 0 1 1 12 8.9a3.1 3.1 0 0 1 0 6.2Zm6-7.9a1.1 1.1 0 1 1-2.1 0 1.1 1.1 0 0 1 2.1 0Z" />
-                <path d="M12 2.2h4.1c3.2 0 5.7 2.5 5.7 5.7V16c0 3.2-2.5 5.7-5.7 5.7H7.9A5.7 5.7 0 0 1 2.2 16V7.9c0-3.2 2.5-5.7 5.7-5.7H12Zm0 1.6H7.9a4.1 4.1 0 0 0-4.1 4.1V16A4.1 4.1 0 0 0 7.9 20h8.2a4.1 4.1 0 0 0 4.1-4.1V7.9a4.1 4.1 0 0 0-4.1-4.1H12Z" />
+              {ADDRESS}
+            </span>
+            <span className="flex items-center gap-1.5">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-3.5 w-3.5 shrink-0">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 7v5l3 3" />
               </svg>
-            </a>
-            <a href="#" aria-label="TikTok" className="opacity-90 transition-opacity hover:opacity-100">
-              <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 fill-current">
-                <path d="M17.53 4.53a4.9 4.9 0 0 1-2.88-1.72V2h-2.9v11.02a2.97 2.97 0 1 1-2.97-2.97c.21 0 .41.02.61.06V7.18a5.86 5.86 0 1 0 5.26 5.84V7.86c.9.4 1.88.6 2.88.6V4.53Z" />
-              </svg>
-            </a>
+              {HOURS}
+            </span>
           </div>
-          <p className="text-center text-[9px] font-semibold uppercase tracking-wide text-white md:whitespace-nowrap md:text-[11px] md:tracking-widest">
-            Descuento adicional: 10% en efectivo o 5 % transferencias
-          </p>
-          <div className="hidden md:block" />
+
+          {/* Descuento — centro en mobile, visible siempre */}
+         {/*  <p className="flex-1 text-center text-[10px] font-bold uppercase tracking-widest md:text-[11px]">
+            10% OFF en efectivo · 5% en transferencia
+          </p> */}
+
+          {/* WhatsApp desktop */}
+          <a
+            href={waHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden items-center gap-1.5 text-[11px] font-semibold transition-opacity hover:opacity-80 md:flex"
+            aria-label="Contactar por WhatsApp"
+          >
+            <svg viewBox="0 0 16 16" className="h-3.5 w-3.5 fill-current">
+              <path d="M13.601 2.326A7.854 7.854 0 0 0 8.04 0C3.674 0 .12 3.554.12 7.92c0 1.398.365 2.762 1.057 3.965L0 16l4.235-1.11a7.902 7.902 0 0 0 3.805.968h.003c4.366 0 7.92-3.554 7.92-7.92a7.9 7.9 0 0 0-2.362-5.612Zm-5.56 12.21a6.57 6.57 0 0 1-3.345-.915l-.24-.144-2.515.66.672-2.453-.156-.252a6.56 6.56 0 0 1-1.004-3.514c0-3.626 2.95-6.576 6.577-6.576 1.747 0 3.389.68 4.624 1.915a6.53 6.53 0 0 1 1.92 4.64c-.001 3.627-2.95 6.577-6.576 6.577Z" />
+              <path d="M11.78 9.812c-.148-.074-.87-.428-1.004-.476-.134-.05-.232-.074-.33.074-.098.148-.379.476-.464.574-.086.099-.173.111-.32.037-.148-.074-.625-.23-1.19-.733-.44-.392-.737-.876-.824-1.024-.086-.148-.009-.228.065-.302.067-.067.148-.173.222-.259.074-.086.099-.148.148-.247.05-.099.025-.185-.012-.259-.037-.074-.33-.797-.453-1.092-.12-.289-.242-.25-.33-.255l-.282-.005a.54.54 0 0 0-.39.185c-.135.148-.514.501-.514 1.22 0 .718.526 1.412.6 1.51.074.099 1.037 1.584 2.515 2.221.351.151.625.241.838.308.352.112.672.096.925.058.282-.042.87-.355.992-.699.123-.343.123-.637.086-.699-.037-.062-.136-.099-.284-.173Z" />
+            </svg>
+            WhatsApp
+          </a>
         </div>
       </div>
-      */}
 
+      {/* Barra principal */}
       <div className="bg-[#029f9c] text-white">
         <div className="mx-auto w-full max-w-[1500px] px-2 py-3 md:px-4 md:pl-16 min-[1810px]:md:pl-28">
           <div className="flex items-center justify-between gap-2 md:grid md:grid-cols-[auto_minmax(0,1fr)_auto] md:gap-4 min-[1810px]:md:grid-cols-[130px_minmax(560px,760px)_260px] min-[1810px]:md:gap-8">
+            {/* Botón hamburguesa mobile */}
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen((prev) => !prev)}
@@ -81,9 +97,10 @@ export default function SiteHeader() {
               </svg>
             </button>
 
+            {/* Logo mobile */}
             <Link href="/" className="inline-flex items-center gap-1.5 md:hidden">
-              <PawIcon className="h-6 w-6 text-[#029f9c]" />
-              <span className="text-lg font-black uppercase tracking-wide text-white">PET´S SHOP</span>
+              <PawIcon className="h-6 w-6 text-white" />
+              <span className="text-lg font-black uppercase tracking-wide text-white">Don Paco</span>
             </Link>
 
             {!isDesktopViewport ? (
@@ -92,6 +109,7 @@ export default function SiteHeader() {
               </div>
             ) : null}
 
+            {/* Logo desktop */}
             <button
               type="button"
               onClick={() => setShowDesktopLogo((previous) => !previous)}
@@ -112,12 +130,13 @@ export default function SiteHeader() {
                 <span className="inline-flex items-center gap-2">
                   <PawIcon className="h-7 w-7 text-white" />
                   <span className="text-lg font-black uppercase tracking-wide text-white min-[1810px]:text-xl">
-                    PET´S SHOP
+                    Don Paco
                   </span>
                 </span>
               )}
             </button>
 
+            {/* Búsqueda */}
             <form
               className="order-3 hidden w-full md:order-none md:block md:w-full md:max-w-[560px] md:justify-self-center min-[1810px]:md:max-w-[760px]"
               role="search"
@@ -138,14 +157,7 @@ export default function SiteHeader() {
                   aria-label="Buscar"
                   className="border-l border-[#ededed] px-3 py-3 text-[#3f3f3f] transition-colors hover:text-[#029f9c]"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.2"
-                    className="h-5 w-5"
-                  >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="h-5 w-5">
                     <circle cx="11" cy="11" r="7" />
                     <path d="m20 20-3.5-3.5" />
                   </svg>
@@ -153,15 +165,20 @@ export default function SiteHeader() {
               </div>
             </form>
 
-            <div className="hidden shrink-0 items-center gap-4 text-center md:flex md:justify-self-end min-[1100px]:gap-8">
-              <a href="#" className="hidden text-xs font-semibold md:block">
-                <div className="mx-auto mb-1 flex h-9 w-9 items-center justify-center">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="h-8 w-8">
-                    <path d="M12 3 3 8.2v7.6L12 21l9-5.2V8.2L12 3Z" />
-                    <path d="M12 21V11.5" />
-                  </svg>
-                </div>
-                <span className="hidden min-[1100px]:inline">Ayuda</span>
+            {/* Derecha desktop: WhatsApp + carrito */}
+            <div className="hidden shrink-0 items-center gap-4 text-center md:flex md:justify-self-end min-[1100px]:gap-6">
+              <a
+                href={waHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hidden flex-col items-center text-xs font-semibold transition-opacity hover:opacity-80 min-[1100px]:flex"
+                aria-label="Contactar por WhatsApp"
+              >
+                <svg viewBox="0 0 16 16" className="mb-0.5 h-8 w-8 fill-current">
+                  <path d="M13.601 2.326A7.854 7.854 0 0 0 8.04 0C3.674 0 .12 3.554.12 7.92c0 1.398.365 2.762 1.057 3.965L0 16l4.235-1.11a7.902 7.902 0 0 0 3.805.968h.003c4.366 0 7.92-3.554 7.92-7.92a7.9 7.9 0 0 0-2.362-5.612Zm-5.56 12.21a6.57 6.57 0 0 1-3.345-.915l-.24-.144-2.515.66.672-2.453-.156-.252a6.56 6.56 0 0 1-1.004-3.514c0-3.626 2.95-6.576 6.577-6.576 1.747 0 3.389.68 4.624 1.915a6.53 6.53 0 0 1 1.92 4.64c-.001 3.627-2.95 6.577-6.576 6.577Z" />
+                  <path d="M11.78 9.812c-.148-.074-.87-.428-1.004-.476-.134-.05-.232-.074-.33.074-.098.148-.379.476-.464.574-.086.099-.173.111-.32.037-.148-.074-.625-.23-1.19-.733-.44-.392-.737-.876-.824-1.024-.086-.148-.009-.228.065-.302.067-.067.148-.173.222-.259.074-.086.099-.148.148-.247.05-.099.025-.185-.012-.259-.037-.074-.33-.797-.453-1.092-.12-.289-.242-.25-.33-.255l-.282-.005a.54.54 0 0 0-.39.185c-.135.148-.514.501-.514 1.22 0 .718.526 1.412.6 1.51.074.099 1.037 1.584 2.515 2.221.351.151.625.241.838.308.352.112.672.096.925.058.282-.042.87-.355.992-.699.123-.343.123-.637.086-.699-.037-.062-.136-.099-.284-.173Z" />
+                </svg>
+                WhatsApp
               </a>
               {isDesktopViewport ? <HeaderCart /> : null}
             </div>
