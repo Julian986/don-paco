@@ -72,9 +72,12 @@ const filterGroups = [
   },
 ];
 
+const PAGE_SIZE = 12;
+
 export default function Home() {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<string>("Todas");
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -87,6 +90,7 @@ export default function Home() {
   const selectCategory = useCallback(
     (id: string) => {
       setSelectedCategory(id);
+      setVisibleCount(PAGE_SIZE);
       if (id === "Todas") {
         router.replace("/", { scroll: false });
       } else {
@@ -109,6 +113,9 @@ export default function Home() {
       );
     });
   }, [selectedCategory]);
+
+  const visibleListing = filteredListing.slice(0, visibleCount);
+  const hasMore = visibleCount < filteredListing.length;
 
   return (
     <main className="min-h-screen bg-white text-[#3f3f3f]">
@@ -200,7 +207,7 @@ export default function Home() {
           </aside>
 
           <div className="order-1 grid grid-cols-2 gap-3 sm:gap-5 2xl:grid-cols-3 lg:order-2">
-            {filteredListing.map((entry) =>
+            {visibleListing.map((entry) =>
               entry.type === "group" ? (
                 <ProductGroupCard
                   key={entry.groupSlug}
@@ -218,13 +225,28 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="mt-8 flex justify-center">
-          <button
-            type="button"
-            className="rounded-full border border-[#029f9c] px-6 py-3 text-sm font-bold uppercase tracking-wide text-[#029f9c] transition-colors hover:bg-[#029f9c] hover:text-white"
-          >
-            Mostrar mas productos
-          </button>
+        <div className="mt-8 flex flex-col items-center gap-3">
+          <p className="text-[13px] text-[#9a9a9a]">
+            Mostrando {visibleListing.length} de {filteredListing.length} productos
+          </p>
+          {hasMore && (
+            <div className="flex flex-wrap justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => setVisibleCount((prev) => prev + PAGE_SIZE)}
+                className="rounded-full bg-[#029f9c] px-8 py-3 text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#028785]"
+              >
+                Mostrar más
+              </button>
+              <button
+                type="button"
+                onClick={() => setVisibleCount(filteredListing.length)}
+                className="rounded-full border border-[#029f9c] px-8 py-3 text-sm font-bold uppercase tracking-wide text-[#029f9c] transition-colors hover:bg-[#029f9c] hover:text-white"
+              >
+                Ver todos ({filteredListing.length})
+              </button>
+            </div>
+          )}
         </div>
       </section>
 

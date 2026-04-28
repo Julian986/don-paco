@@ -84,7 +84,7 @@ export default function AboutSection() {
             </div>
           </motion.div>
 
-          {/* Visual / decorativo */}
+          {/* Placeholder de video */}
           <motion.div
             initial={{ opacity: 0, x: 24 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -92,26 +92,51 @@ export default function AboutSection() {
             transition={{ duration: 0.55, delay: 0.1 }}
             className="relative"
           >
-            <div className="aspect-[4/3] w-full overflow-hidden rounded-3xl bg-gradient-to-br from-[#e8f6f5] to-[#d0efee] shadow-lg">
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-8 text-center">
-                <span className="text-7xl">🐾</span>
-                <p className="text-2xl font-black uppercase tracking-wide text-[#029f9c]">Don Paco</p>
-                <p className="text-[15px] font-semibold text-[#555]">Pet Shop — Fernández Oro</p>
-                <div className="mt-2 flex flex-wrap justify-center gap-2 text-[12px]">
-                  {["Perros", "Gatos", "Accesorios", "Dietas Vet."].map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-full border border-[#029f9c]/30 bg-white px-3 py-1 font-semibold text-[#029f9c]"
-                    >
-                      {tag}
-                    </span>
-                  ))}
+            <div className="group relative aspect-video w-full overflow-hidden rounded-3xl bg-[#1a1a1a] shadow-xl">
+              {/* Fondo con patrón sutil */}
+              <div className="absolute inset-0 bg-gradient-to-br from-[#029f9c]/20 to-[#017a78]/40" />
+              <div
+                className="absolute inset-0 opacity-10"
+                style={{
+                  backgroundImage:
+                    "radial-gradient(circle, #fff 1px, transparent 1px)",
+                  backgroundSize: "28px 28px",
+                }}
+              />
+
+              {/* Contenido central */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-5">
+                {/* Botón play */}
+                <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-white/30 bg-white/10 backdrop-blur-sm transition-all duration-300 group-hover:scale-110 group-hover:bg-white/20">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="white"
+                    className="h-9 w-9 translate-x-0.5"
+                  >
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
                 </div>
+                <div className="text-center">
+                  <p className="text-[13px] font-bold uppercase tracking-widest text-white/50">
+                    Próximamente
+                  </p>
+                  <p className="mt-1 text-lg font-extrabold uppercase tracking-wide text-white">
+                    Conocé nuestro local
+                  </p>
+                </div>
+              </div>
+
+              {/* Etiqueta video */}
+              <div className="absolute left-4 top-4 flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 backdrop-blur-sm">
+                <span className="h-2 w-2 animate-pulse rounded-full bg-[#e4077d]" />
+                <span className="text-[11px] font-bold uppercase tracking-widest text-white/80">
+                  Video
+                </span>
               </div>
             </div>
 
             {/* Burbuja de confianza */}
-            <div className="absolute -bottom-5 -left-5 hidden rounded-2xl bg-[#e4077d] px-5 py-4 text-white shadow-xl lg:block">
+            <div className="absolute -bottom-5 -right-5 hidden rounded-2xl bg-[#e4077d] px-5 py-4 text-white shadow-xl lg:block">
               <p className="text-2xl font-black">+500</p>
               <p className="text-[12px] font-semibold uppercase tracking-wide text-white/80">clientes felices</p>
             </div>

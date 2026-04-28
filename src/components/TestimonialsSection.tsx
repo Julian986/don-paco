@@ -52,22 +52,28 @@ export default function TestimonialsSection() {
           </h2>
         </div>
 
-        {/* Scroll horizontal en mobile, grid en desktop */}
-        <div className="flex gap-5 overflow-x-auto pb-4 scrollbar-thin md:grid md:grid-cols-2 md:overflow-visible md:pb-0 lg:grid-cols-4">
+        {/* Grid: 1 col mobile → 2 col tablet → 4 col desktop */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4">
           {testimonials.map((t, i) => (
             <motion.div
               key={t.name}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-40px" }}
-              transition={{ duration: 0.45, delay: i * 0.1 }}
-              className="min-w-[280px] shrink-0 rounded-2xl border border-[#e6e6e6] bg-white p-6 shadow-sm md:min-w-0 md:shrink"
+              transition={{ duration: 0.45, delay: i * 0.08 }}
+              className="flex flex-col rounded-2xl border border-[#e6e6e6] bg-white p-5 shadow-sm sm:p-6"
             >
               <Stars count={t.stars} />
-              <p className="mt-4 text-[14px] leading-7 text-[#555]">&ldquo;{t.text}&rdquo;</p>
-              <div className="mt-5 border-t border-[#f0f0f0] pt-4">
-                <p className="text-[14px] font-extrabold text-[#3f3f3f]">{t.name}</p>
-                <p className="text-[12px] text-[#9a9a9a]">{t.pet}</p>
+              <p className="mt-4 flex-1 text-[14px] leading-7 text-[#555]">&ldquo;{t.text}&rdquo;</p>
+              <div className="mt-5 flex items-center gap-3 border-t border-[#f0f0f0] pt-4">
+                {/* Avatar inicial */}
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#029f9c]/15 text-[13px] font-black text-[#029f9c]">
+                  {t.name[0]}
+                </div>
+                <div>
+                  <p className="text-[14px] font-extrabold text-[#3f3f3f]">{t.name}</p>
+                  <p className="text-[12px] text-[#9a9a9a]">{t.pet}</p>
+                </div>
               </div>
             </motion.div>
           ))}
