@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+/// Catálogo persistido. `lista` = precio de lista; tarjeta y efectivo se calculan como en la tienda.
+model Product {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  slug        String   @unique
+  name        String
+  marca       String
+  nombre      String
+  description String?
+  lista       Float
+  cash        Float?
+  categoryId  String
+  stock       Int      @default(5)
+  images      String[]
+  destacado   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Order {
+  id              String      @id @default(auto()) @map("_id") @db.ObjectId
+  customerName    String?
+  customerEmail   String?
+  phone             String?
+  status            OrderStatus @default(PENDING)
+  total             Float
+  currency          String      @default("ARS")
+  items             Json
+  notes             String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}

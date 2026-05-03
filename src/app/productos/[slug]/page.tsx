@@ -22,8 +22,9 @@ type ProductDetailPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export function generateStaticParams() {
-  return listAllProductPageSlugs().map((slug) => ({ slug }));
+export async function generateStaticParams() {
+  const slugs = await listAllProductPageSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export default async function ProductDetailPage({ params }: ProductDetailPageProps) {
@@ -31,8 +32,8 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
   const extraZoomOutProductSlugs = new Set(["sieger-pouch-perro"]);
   const zoomInProductSlugs = new Set(["upper-castrado-x1-5"]);
 
-  const products = getProducts();
-  const group = getGroupListingIfExists(slug);
+  const products = await getProducts();
+  const group = await getGroupListingIfExists(slug);
   if (group) {
     const exclude = new Set(group.variants.map((v) => v.slug));
     const relatedProducts = products
@@ -51,7 +52,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
     redirect(`/productos/${groupSlug}`);
   }
 
-  const product = getProductBySlug(slug);
+  const product = await getProductBySlug(slug);
 
   if (!product) {
     notFound();

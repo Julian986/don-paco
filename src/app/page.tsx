@@ -4,8 +4,8 @@ import { buildListingEntries } from "@/lib/products-build";
 
 export const dynamic = "force-dynamic";
 
-export default function Page() {
-  const initialListing = buildListingEntries();
+export default async function Page() {
+  const initialListing = await buildListingEntries();
   const site = getSiteSettings();
   return <HomeClient initialListing={initialListing} site={site} />;
 }

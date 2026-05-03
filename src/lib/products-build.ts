@@ -3,6 +3,8 @@ import "server-only";
 import fs from "node:fs";
 import path from "node:path";
 
+import type { Product as PrismaProductRow } from "@prisma/client";
+
 import { getCatalogRows } from "@/lib/catalog-rows";
 import type { CatalogRow } from "@/lib/catalog-types";
 import { categoryBadgeLabel, isCategoryId, type CategoryId } from "@/lib/category-tree";
@@ -15,6 +17,7 @@ import {
   getProductGroupDefinition,
   listGroupSlugs,
 } from "@/lib/product-groups";
+import { prisma } from "@/lib/prisma";
 import { precioEfectivoTransfer, precioTarjetaDesdeLista } from "@/lib/pricing";
 
 void CATALOGO_NO_PUBLICADO;
@@ -29,16 +32,16 @@ function catalogMtimeMs(): number {
   }
 }
 
-let productsCache: { mtimeMs: number; list: Product[] } | null = null;
+let productsJsonCache: { mtimeMs: number; list: Product[] } | null = null;
 
-function buildDescription(row: CatalogRow) {
+function buildDescriptionFromLista(row: { lista: number; cash: number | null }) {
   const listaTxt = formatArs(row.lista);
   const tarjetaTxt = formatArs(precioTarjetaDesdeLista(row.lista));
   const efectivoTxt = formatArs(precioEfectivoTransfer(row.lista, row.cash));
   return `Precio de lista ${listaTxt}. Con tarjeta de crédito (lista +10%): ${tarjetaTxt}. Efectivo o transferencia: ${efectivoTxt}. Consultá promociones 2x1 en latas y pouches según disponibilidad en el local.`;
 }
 
-function mapRowToProduct(row: CatalogRow): Product {
+function mapCatalogRowToProduct(row: CatalogRow): Product {
   const manualImg = row.imageSrc?.trim();
   const imageSrc = manualImg || productImageBySlug[row.slug];
   const desc = row.descripcion?.trim();
@@ -52,7 +55,7 @@ function mapRowToProduct(row: CatalogRow): Product {
     categoryId: row.categoryId,
     category: categoryBadgeLabel(row.categoryId),
     shortDescription: `Lista ${formatArs(row.lista)} · ${row.marca}`,
-    description: desc || buildDescription(row),
+    description: desc || buildDescriptionFromLista(row),
     colors: [],
     sizes: [],
     stock: 5,
@@ -61,24 +64,70 @@ function mapRowToProduct(row: CatalogRow): Product {
   };
 }
 
-export function getProducts(): Product[] {
+function getProductsFromCatalogJson(): Product[] {
   const mtimeMs = catalogMtimeMs();
-  if (productsCache && productsCache.mtimeMs === mtimeMs) {
-    return productsCache.list;
+  if (productsJsonCache && productsJsonCache.mtimeMs === mtimeMs) {
+    return productsJsonCache.list;
   }
   const rows = getCatalogRows();
-  const list = rows.map(mapRowToProduct);
-  productsCache = { mtimeMs, list };
+  const list = rows.map(mapCatalogRowToProduct);
+  productsJsonCache = { mtimeMs, list };
   return list;
 }
 
-export function getProductBySlug(slug: string) {
-  return getProducts().find((product) => product.slug === slug);
+export function invalidateCatalogJsonProductCache() {
+  productsJsonCache = null;
 }
 
-export function listAllProductPageSlugs() {
+function mapPrismaRowToProduct(row: PrismaProductRow): Product {
+  const categoryId = (isCategoryId(row.categoryId) ? row.categoryId : "mascota-perro-alimento-seco") as CategoryId;
+  const manual = row.images?.find((u) => u?.trim())?.trim();
+  const imageSrc = manual || productImageBySlug[row.slug];
+  const cash = row.cash ?? null;
+  const desc = row.description?.trim();
+  return {
+    slug: row.slug,
+    name: row.name,
+    brand: row.marca,
+    precioLista: row.lista,
+    price: precioTarjetaDesdeLista(row.lista),
+    cashPrice: precioEfectivoTransfer(row.lista, cash),
+    categoryId,
+    category: categoryBadgeLabel(categoryId),
+    shortDescription: desc ? desc.slice(0, 120) : `Lista ${formatArs(row.lista)} · ${row.marca}`,
+    description: desc || buildDescriptionFromLista({ lista: row.lista, cash }),
+    colors: [],
+    sizes: [],
+    stock: row.stock,
+    imageSrc: imageSrc || undefined,
+    destacado: row.destacado,
+  };
+}
+
+async function loadProducts(): Promise<Product[]> {
+  const url = process.env.DATABASE_URL?.trim();
+  if (!url) return getProductsFromCatalogJson();
+  try {
+    const count = await prisma.product.count();
+    if (count === 0) return getProductsFromCatalogJson();
+    const rows = await prisma.product.findMany({ orderBy: { slug: "asc" } });
+    return rows.map(mapPrismaRowToProduct);
+  } catch {
+    return getProductsFromCatalogJson();
+  }
+}
+
+export async function getProducts(): Promise<Product[]> {
+  return loadProducts();
+}
+
+export async function getProductBySlug(slug: string) {
+  return (await getProducts()).find((product) => product.slug === slug);
+}
+
+export async function listAllProductPageSlugs(): Promise<string[]> {
   const slugs = new Set<string>();
-  for (const p of getProducts()) {
+  for (const p of await getProducts()) {
     slugs.add(p.slug);
   }
   for (const g of listGroupSlugs()) {
@@ -87,8 +136,7 @@ export function listAllProductPageSlugs() {
   return [...slugs];
 }
 
-export function buildListingEntries(): ListingEntry[] {
-  const products = getProducts();
+function buildListingFromProducts(products: Product[]): ListingEntry[] {
   const seenGroups = new Set<string>();
   const out: ListingEntry[] = [];
 
@@ -122,10 +170,15 @@ export function buildListingEntries(): ListingEntry[] {
   return out;
 }
 
-export function getGroupListingIfExists(groupSlug: string): (ListingEntry & { type: "group" }) | undefined {
+export async function buildListingEntries(): Promise<ListingEntry[]> {
+  const products = await getProducts();
+  return buildListingFromProducts(products);
+}
+
+export async function getGroupListingIfExists(groupSlug: string): Promise<(ListingEntry & { type: "group" }) | undefined> {
   const def = getProductGroupDefinition(groupSlug);
   if (!def) return undefined;
-  const products = getProducts();
+  const products = await getProducts();
   const variants = def.variantSlugs
     .map((s) => products.find((x) => x.slug === s))
     .filter((x): x is Product => !!x);
