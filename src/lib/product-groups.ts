@@ -656,6 +656,11 @@ export const PRODUCT_GROUPS: readonly ProductGroupDefinition[] = [
     variantSlugs: ["has-gato-x10"],
   },
   {
+    groupSlug: "gati",
+    displayName: "Gati",
+    variantSlugs: ["gati-x8", "gati-x15"],
+  },
+  {
     groupSlug: "maxxium-lata-gato",
     displayName: "Maxxium — Lata gato",
     variantSlugs: ["maxxium-lata-gato-grande", "maxxium-lata-gato-chica"],

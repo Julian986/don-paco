@@ -18,7 +18,12 @@ export default function ProductCard({ product, showPetAudience }: ProductCardPro
   const { addItem } = useCart();
   const router = useRouter();
   const extraZoomOutProductSlugs = new Set(["sieger-pouch-perro"]);
-  const imageFitClass = extraZoomOutProductSlugs.has(product.slug) ? "object-contain p-7" : "object-contain p-4";
+  const zoomInProductSlugs = new Set(["upper-castrado-x1-5"]);
+  const imageFitClass = extraZoomOutProductSlugs.has(product.slug)
+    ? "object-contain p-7"
+    : zoomInProductSlugs.has(product.slug)
+      ? "object-contain p-1"
+      : "object-contain p-4";
 
   const goToDetail = () => {
     router.push(`/productos/${product.slug}`);

@@ -106,14 +106,14 @@ add("Agility", "Gato adulto x10", "75000", "68300", "mascota-gato-alimento-seco"
 add("Agility", "Control de peso x1,5", "18600", null, "mascota-perro-alimento-seco");
 add("Agility", "Urinary x1,5", "17300", null, "mascota-gato-alimento-dietas");
 add("Agility", "Urinary x10", "80300", "73000", "mascota-gato-alimento-dietas");
-add("Agility", "Salmon x1,5", "18100", null, "mascota-perro-alimento-seco");
+add("Agility", "Salmon x1,5", "18100", null, "mascota-gato-alimento-seco");
 add("Agility", "Senior +7 x15", "71700", "69000", "mascota-perro-alimento-seco");
 add("Agility", "Derma x15", "73100", "70300", "mascota-perro-alimento-dietas");
 add("Agility", "Lata", "5500", null, "mascota-perro-alimento-humedo");
 
 // --- 7 VIDA ---
-add("7 Vida", "Adulto x1", "8700", null, "mascota-perro-alimento-seco");
-add("7 Vida", "Adulto x10", "57900", null, "mascota-perro-alimento-seco");
+add("7 Vida", "Adulto x1", "8700", null, "mascota-gato-alimento-seco");
+add("7 Vida", "Adulto x10", "57900", null, "mascota-gato-alimento-seco");
 
 // --- NUTRICARE ---
 add("Nutricare", "Adulto x20", "49400", "44000", "mascota-perro-alimento-seco");
@@ -312,7 +312,9 @@ const otras = [
   ["Total Khan", "Adulto x20", "39900", "35000"],
 ];
 for (const [marca, nombre, lista, cash] of otras) {
-  const cat = String(nombre).toLowerCase().includes("gato") ? "mascota-gato-alimento-seco" : "mascota-perro-alimento-seco";
+  let cat = String(nombre).toLowerCase().includes("gato") ? "mascota-gato-alimento-seco" : "mascota-perro-alimento-seco";
+  if (marca === "Upper" && nombre === "Castrado x1,5") cat = "mascota-gato-alimento-seco";
+  if (marca === "Gati") cat = "mascota-gato-alimento-seco";
   add(marca, nombre, lista, cash, cat);
 }
 
