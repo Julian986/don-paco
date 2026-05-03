@@ -5,7 +5,9 @@ import GroupVariantLines from "@/components/group-variant-lines";
 import SiteFooter from "@/components/site-footer";
 import SiteHeader from "@/components/site-header";
 import { categoryBadgeLabel } from "@/lib/category-tree";
-import { formatArs, getDetailHrefForProductSlug, type ListingEntry, type Product } from "@/lib/products";
+import { formatArs } from "@/lib/products";
+import { getDetailHrefForProductSlug } from "@/lib/product-routing";
+import type { ListingEntry, Product } from "@/lib/product-types";
 
 type GroupModel = Extract<ListingEntry, { type: "group" }>;
 

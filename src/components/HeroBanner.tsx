@@ -1,6 +1,18 @@
 "use client";
 
-export default function HeroBanner() {
+type HeroBannerProps = {
+  bannerTitle?: string;
+  bannerSubtitle?: string;
+  bannerLead?: string;
+  cashDiscountLabel?: string;
+};
+
+export default function HeroBanner({
+  bannerTitle = "Don Paco",
+  bannerSubtitle = "Pet's Shop",
+  bannerLead = "Roca 473, Gral. Fernández Oro — RN",
+  cashDiscountLabel = "10% off en efectivo",
+}: HeroBannerProps) {
   return (
     <>
       <div className="w-full bg-[#e8f6f5] md:hidden">
@@ -31,13 +43,11 @@ export default function HeroBanner() {
           </div>
 
           <div className="flex w-[55%] flex-col justify-center gap-3 px-10 py-8 text-white">
-            <h2 className="text-4xl font-black tracking-tight lg:text-5xl">Don Paco</h2>
-            <p className="text-xl font-semibold text-white">Pet&apos;s Shop</p>
-            <p className="max-w-lg text-base leading-relaxed text-white/90">
-              Roca 473, Gral. Fernández Oro — RN
-            </p>
+            <h2 className="text-4xl font-black tracking-tight lg:text-5xl">{bannerTitle}</h2>
+            <p className="text-xl font-semibold text-white">{bannerSubtitle}</p>
+            <p className="max-w-lg text-base leading-relaxed text-white/90">{bannerLead}</p>
             <span className="inline-flex w-fit rounded-full border border-white/40 bg-white/10 px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-white">
-              10% off en efectivo
+              {cashDiscountLabel}
             </span>
           </div>
         </div>

@@ -7,14 +7,16 @@ import ProductDetailActions from "@/components/product-detail-actions";
 import SiteFooter from "@/components/site-footer";
 import SiteHeader from "@/components/site-header";
 import { getGroupSlugForVariantSlug } from "@/lib/product-groups";
+import { formatArs } from "@/lib/products";
+import { getDetailHrefForProductSlug } from "@/lib/product-routing";
 import {
-  formatArs,
-  getDetailHrefForProductSlug,
   getGroupListingIfExists,
   getProductBySlug,
+  getProducts,
   listAllProductPageSlugs,
-  products,
-} from "@/lib/products";
+} from "@/lib/products-build";
+
+export const dynamic = "force-dynamic";
 
 type ProductDetailPageProps = {
   params: Promise<{ slug: string }>;
@@ -29,6 +31,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
   const extraZoomOutProductSlugs = new Set(["sieger-pouch-perro"]);
   const zoomInProductSlugs = new Set(["upper-castrado-x1-5"]);
 
+  const products = getProducts();
   const group = getGroupListingIfExists(slug);
   if (group) {
     const exclude = new Set(group.variants.map((v) => v.slug));
