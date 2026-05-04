@@ -26,5 +26,12 @@ export default async function NewProductPage({ searchParams }: Props) {
     groupSlug: preGroup,
   };
 
-  return <ProductForm mode="create" defaultValues={defaultValues} groupSelectOptions={groupSelectOptions} />;
+  return (
+    <ProductForm
+      mode="create"
+      layout="storefront"
+      defaultValues={defaultValues}
+      groupSelectOptions={groupSelectOptions}
+    />
+  );
 }

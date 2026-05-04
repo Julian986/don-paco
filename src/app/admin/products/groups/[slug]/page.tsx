@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { AdminBackNav } from "@/components/admin/admin-back-nav";
 import ProductGroupAdminForm from "@/components/admin/product-group-admin-form";
 import { getProductGroupDisplayRow } from "@/lib/product-group-display-overlays";
 import { loadMergedGroupDefinitions } from "@/lib/product-group-merge";
 import { resolveProductGroupSlug } from "@/lib/product-group-slug";
 import { getProductGroupDefinition } from "@/lib/product-groups";
 import { prisma } from "@/lib/prisma";
-import { getProducts } from "@/lib/products-build";
+import { getGroupListingIfExists, getProducts } from "@/lib/products-build";
 import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
@@ -27,6 +28,10 @@ export default async function AdminProductGroupDetailPage({ params }: Props) {
   const row = await getProductGroupDisplayRow(slug);
   const initialDisplayName = row?.displayName?.trim() || def.displayName;
   const initialDescription = row?.description?.trim() ?? "";
+  const initialHeroImageUrl = row?.heroImageUrl?.trim() ?? null;
+
+  const listingPreview = await getGroupListingIfExists(slug);
+  const fallbackStorefrontHeroUrl = listingPreview?.imageSrc;
 
   let prismaProducts: Awaited<ReturnType<typeof prisma.product.findMany>> = [];
   try {
@@ -43,6 +48,8 @@ export default async function AdminProductGroupDetailPage({ params }: Props) {
 
   return (
     <div className="space-y-10 pb-8">
+      <AdminBackNav href="/admin/products">Productos</AdminBackNav>
+
       <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
         <div className="min-w-0">
           <h1 className="text-2xl font-black tracking-tight text-[#18181b]">{initialDisplayName}</h1>
@@ -106,6 +113,8 @@ export default async function AdminProductGroupDetailPage({ params }: Props) {
           variantCount={members.length}
           initialDisplayName={initialDisplayName}
           initialDescription={initialDescription}
+          initialHeroImageUrl={initialHeroImageUrl}
+          fallbackStorefrontHeroUrl={fallbackStorefrontHeroUrl}
           isStaticCatalog={Boolean(staticDef)}
         />
       </section>

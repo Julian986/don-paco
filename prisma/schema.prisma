@@ -42,6 +42,8 @@ model ProductGroupDisplay {
   groupSlug   String   @unique
   displayName String
   description String?
+  /// Imagen de la card / ficha agrupada (URL remota o bajo /public).
+  heroImageUrl String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -52,6 +54,8 @@ model ProductGroup {
   slug        String   @unique
   displayName String
   description String?
+  /// Imagen principal del grupo en listado y ficha (sobrescribe mapa estático y fallback por variantes).
+  heroImageUrl String?
   isCustom    Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

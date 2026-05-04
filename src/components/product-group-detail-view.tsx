@@ -93,7 +93,8 @@ export default function ProductGroupDetailView({ group, relatedProducts }: Produ
                 <span className="whitespace-pre-wrap">{group.groupDescription.trim()}</span>
               ) : (
                 <>
-                  Elegí el formato (presentación). Los precios son por bolsa; tarjeta de crédito = lista +10%.
+                  Elegí el formato (presentación). Con tarjeta de crédito se incluye 10% sobre el precio común de cada
+                  variante.
                 </>
               )}
             </p>

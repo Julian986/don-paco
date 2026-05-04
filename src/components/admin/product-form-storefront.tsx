@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import type { UseFormReturn } from "react-hook-form";
+import { Controller, type UseFormReturn } from "react-hook-form";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -14,12 +14,12 @@ import { Label } from "@/components/ui/label";
 import type { GroupSelectOption } from "@/lib/admin/product-form-values";
 import type { ProductFormValues } from "@/lib/admin/product-form-values";
 import { categoryBadgeLabel, isCategoryId, type CategoryId } from "@/lib/category-tree";
-import { resolveProductGroupSlug } from "@/lib/product-group-slug";
 import { formatArs } from "@/lib/product-format";
-import { precioEfectivoTransfer, precioTarjetaDesdeLista } from "@/lib/pricing";
+import { listaDesdePrecioTarjeta, precioEfectivoTransfer, precioTarjetaDesdeLista } from "@/lib/pricing";
 import { cn } from "@/lib/utils";
 
 type Props = {
+  mode?: "create" | "edit";
   form: UseFormReturn<ProductFormValues>;
   onSubmit: (e?: React.BaseSyntheticEvent) => Promise<void>;
   onUpload: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
@@ -30,9 +30,16 @@ function normalizeGalleryImages(images: string[] | undefined | null): string[] {
   return images?.map((u) => u?.trim()).filter((u): u is string => Boolean(u)) ?? [];
 }
 
-export function ProductFormStorefront({ form, onSubmit, onUpload, groupSelectOptions }: Props) {
+export function ProductFormStorefront({
+  mode = "edit",
+  form,
+  onSubmit,
+  onUpload,
+  groupSelectOptions,
+}: Props) {
   const router = useRouter();
-  const { register, watch, setValue, formState } = form;
+  const isCreate = mode === "create";
+  const { register, watch, setValue, control, formState } = form;
   const v = watch();
   const images = v.images ?? [];
   const gallery = useMemo(() => normalizeGalleryImages(images), [images]);
@@ -65,66 +72,35 @@ export function ProductFormStorefront({ form, onSubmit, onUpload, groupSelectOpt
   const catId = v.categoryId;
   const catLabel = isCategoryId(catId) ? categoryBadgeLabel(catId) : "Sin categoría";
   const slugWatch = (v.slug || "").trim();
-  const shortLine = `Lista ${formatArs(lista)} · ${v.marca || "—"}`.trim();
-  const resolvedGroupSlug = resolveProductGroupSlug({
-    slug: slugWatch,
-    groupSlug: (v.groupSlug ?? "").trim() || null,
-  });
-
+  const shortLine = `${formatArs(price)} con tarjeta · ${v.marca || "—"}`.trim();
   return (
     <form onSubmit={onSubmit} className="pb-28 md:pb-0">
       <section className="mx-auto w-full max-w-7xl">
-        <nav className="mb-4 text-sm text-[#8a8a8a] md:mb-6">
-          <ol className="flex flex-wrap items-center gap-2">
-            <li>
-              <Link href="/admin/dashboard" className="hover:text-[#029f9c]">
-                Admin
-              </Link>
-            </li>
-            <li>/</li>
-            <li>
-              <Link href="/admin/products" className="hover:text-[#029f9c]">
-                Productos
-              </Link>
-            </li>
-            <li>/</li>
-            <li className="font-semibold text-[#666]">Editar</li>
-          </ol>
-        </nav>
-
-        {resolvedGroupSlug ? (
-          <div className="mb-4 rounded-xl border border-[#fce7f3] bg-[#fdf2f8] px-4 py-3 text-sm text-[#52525b]">
-            <p>
-              Esta presentación forma parte de un <strong className="text-[#18181b]">grupo</strong> en la tienda (una
-              card con varios formatos). Podés editar el nombre y el texto de esa ficha agrupada.
+        {isCreate ? (
+          <div className="mb-4 rounded-xl border border-[#e4e4e7] bg-white px-4 py-3 shadow-sm">
+            <h1 className="text-xl font-black tracking-tight text-[#18181b] md:text-2xl">Nuevo producto</h1>
+            <p className="mt-1 text-sm text-[#71717a]">
+              Misma vista que al editar: completá la ficha, definí el slug y subí al menos una imagen.
             </p>
-            <Button type="button" variant="outline" size="sm" className="mt-3 rounded-lg border-[#e4077d]/40 text-[#be185d]" asChild>
-              <Link href={`/admin/products/groups/${encodeURIComponent(resolvedGroupSlug)}`}>
-                Editar ficha del grupo →
-              </Link>
-            </Button>
           </div>
         ) : null}
 
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
           <div className="flex flex-wrap gap-2">
-            {slugWatch ? (
+            {!isCreate && slugWatch ? (
               <Button type="button" variant="outline" size="sm" className="rounded-xl" asChild>
                 <Link href={`/productos/${encodeURIComponent(slugWatch)}`} target="_blank" rel="noopener noreferrer">
                   Ver en tienda ↗
                 </Link>
               </Button>
             ) : null}
-            <Button type="button" variant="ghost" size="sm" className="text-[#71717a]" asChild>
-              <Link href="/admin/products">← Listado</Link>
-            </Button>
           </div>
           <div className="hidden gap-2 md:flex">
             <Button type="button" variant="outline" className="rounded-xl" onClick={() => router.back()}>
               Cancelar
             </Button>
             <Button type="submit" className="rounded-xl bg-[#029f9c] font-semibold hover:bg-[#027a78]">
-              Guardar cambios
+              {isCreate ? "Crear producto" : "Guardar cambios"}
             </Button>
           </div>
         </div>
@@ -155,7 +131,13 @@ export function ProductFormStorefront({ form, onSubmit, onUpload, groupSelectOpt
             </div>
 
             <div className="space-y-3">
-              <Label className="text-xs font-semibold uppercase tracking-wide text-[#71717a]">Galería</Label>
+              <div>
+                <Label className="text-xs font-semibold uppercase tracking-wide text-[#71717a]">Galería del producto</Label>
+                <p className="mt-1 text-xs leading-snug text-[#a1a1aa]">
+                  Imágenes de esta variante en la ficha. La imagen común del grupo (card con varios formatos) se edita en
+                  Productos → grupo, no en esta pantalla.
+                </p>
+              </div>
               <div className="flex flex-wrap gap-2">
                 <Button type="button" variant="outline" size="sm" className="rounded-xl" asChild>
                   <label className="cursor-pointer">
@@ -262,37 +244,75 @@ export function ProductFormStorefront({ form, onSubmit, onUpload, groupSelectOpt
             <p className="mb-5 text-[15px] leading-7 text-[#707070]">{shortLine}</p>
 
             <div className="mb-6 rounded-xl bg-[#f7f7f7] p-4">
-              <p className="text-3xl font-black text-[#029f9c]">{formatArs(price)}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-[#8a8a8a]">Vista previa (como en la tienda)</p>
+              <p className="mt-1 text-3xl font-black text-[#029f9c]">{formatArs(price)}</p>
               <p className="mt-1 text-sm text-[#7a7a7a]">{formatArs(cashPrice)} efectivo o transferencia</p>
-              <div className="mt-3 grid gap-3 sm:grid-cols-2">
+              <p className="mt-2 text-xs leading-snug text-[#9ca3af]">
+                Precio común de referencia (sin recargo tarjeta): <strong className="font-semibold text-[#6b7280]">{formatArs(lista)}</strong>
+              </p>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 <div className="space-y-1">
-                  <Label htmlFor="storefront-lista" className="text-xs text-[#8a8a8a]">
-                    Precio lista (ARS)
+                  <Label htmlFor="storefront-precio-tarjeta" className="text-xs font-semibold text-[#52525b]">
+                    Precio con tarjeta (ARS)
                   </Label>
-                  <Input
-                    id="storefront-lista"
-                    type="number"
-                    step="1"
-                    className="rounded-lg border-[#e4e4e4] bg-white"
-                    {...register("lista", { valueAsNumber: true })}
+                  <p className="text-[11px] leading-snug text-[#a1a1aa]">
+                    Es el monto grande que ve el comprador en la ficha; coincide con la vista previa de arriba.
+                  </p>
+                  <Controller
+                    name="lista"
+                    control={control}
+                    render={({ field }) => {
+                      const tarjetaMostrada =
+                        field.value === undefined || field.value === null || Number(field.value) === 0
+                          ? ""
+                          : String(precioTarjetaDesdeLista(Number(field.value)));
+                      return (
+                        <Input
+                          id="storefront-precio-tarjeta"
+                          type="number"
+                          step="1"
+                          min={0}
+                          inputMode="numeric"
+                          className="rounded-lg border-[#e4e4e4] bg-white"
+                          value={tarjetaMostrada}
+                          onChange={(e) => {
+                            const raw = e.target.value;
+                            if (raw === "") {
+                              field.onChange(0);
+                              return;
+                            }
+                            const n = Number(raw);
+                            if (!Number.isFinite(n)) return;
+                            field.onChange(listaDesdePrecioTarjeta(n));
+                          }}
+                          onBlur={field.onBlur}
+                          ref={field.ref}
+                        />
+                      );
+                    }}
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label htmlFor="storefront-cash" className="text-xs text-[#8a8a8a]">
+                  <Label htmlFor="storefront-cash" className="text-xs font-semibold text-[#52525b]">
                     Efectivo / transferencia (opcional)
                   </Label>
+                  <p className="text-[11px] leading-snug text-[#a1a1aa]">
+                    Si lo dejás vacío, en la tienda se usa el precio común ({formatArs(lista)}).
+                  </p>
                   <Input
                     id="storefront-cash"
                     type="number"
                     step="1"
-                    placeholder="Vacío = lista"
+                    placeholder={lista > 0 ? `Vacío = ${formatArs(lista)}` : "Vacío = precio común"}
                     className="rounded-lg border-[#e4e4e4] bg-white"
                     {...register("cash")}
                   />
                 </div>
               </div>
-              <p className="mt-3 text-xs uppercase tracking-wide text-[#8f8f8f]">
-                Tarjeta: lista + 10% (como en la tienda)
+              <p className="mt-3 text-xs leading-relaxed text-[#6b7280]">
+                <strong className="text-[#52525b]">Lo que ingresás en precio con tarjeta</strong> es el monto final que
+                ve el comprador (el 10% ya queda incorporado en ese valor). El precio común es referencia (ese monto ÷
+                1,10). El efectivo puede ser otro si lo completás.
               </p>
             </div>
 
@@ -374,12 +394,18 @@ export function ProductFormStorefront({ form, onSubmit, onUpload, groupSelectOpt
                 <dt className="text-[#8a8a8a]">Slug (URL)</dt>
                 <dd>
                   <Input
-                    readOnly
-                    className="mt-1 cursor-not-allowed rounded-lg bg-[#fafafa] font-mono text-xs"
+                    readOnly={!isCreate}
+                    placeholder={isCreate ? "ej. collar-rojo-mediano" : undefined}
+                    className={cn(
+                      "mt-1 rounded-lg font-mono text-xs",
+                      !isCreate && "cursor-not-allowed bg-[#fafafa]",
+                    )}
                     {...register("slug")}
                   />
                   <p className="mt-1 text-xs text-[#8a8a8a]">
-                    La URL es fija tras crear el producto; cambios coordinados con desarrollo.
+                    {isCreate
+                      ? "Solo minúsculas, números y guiones. Será la dirección pública del producto."
+                      : "La URL es fija tras crear el producto; cambios coordinados con desarrollo."}
                   </p>
                   {formState.errors.slug && (
                     <p className="mt-1 text-xs text-red-600">{formState.errors.slug.message}</p>
@@ -417,7 +443,7 @@ export function ProductFormStorefront({ form, onSubmit, onUpload, groupSelectOpt
             Cancelar
           </Button>
           <Button type="submit" className="h-11 min-h-[44px] flex-[2] rounded-xl bg-[#029f9c] font-semibold hover:bg-[#027a78]">
-            Guardar
+            {isCreate ? "Crear" : "Guardar"}
           </Button>
         </div>
       </div>

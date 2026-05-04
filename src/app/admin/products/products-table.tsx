@@ -37,7 +37,14 @@ function productMatchesQuery(p: Product, q: string): boolean {
   );
 }
 
-export function ProductsTable({ products }: { products: Product[] }) {
+export function ProductsTable({
+  products,
+  embeddedSearch = false,
+}: {
+  products: Product[];
+  /** Si true, oculta el buscador de texto (p. ej. búsqueda global arriba en /admin/products). */
+  embeddedSearch?: boolean;
+}) {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [categoryId, setCategoryId] = useState("");
@@ -71,30 +78,35 @@ export function ProductsTable({ products }: { products: Product[] }) {
 
   return (
     <div className="space-y-4">
-      {/* Barra de búsqueda y filtros — prioridad mobile */}
       <div className="rounded-2xl border border-[#e4e4e7] bg-white p-4 shadow-sm">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-          <div className="min-w-0 flex-1 space-y-2">
-            <Label htmlFor="admin-product-search" className="text-xs font-semibold uppercase tracking-wide text-[#71717a]">
-              Buscar
-            </Label>
-            <div className="relative">
-              <Search
-                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#a1a1aa]"
-                aria-hidden
-              />
-              <Input
-                id="admin-product-search"
-                type="search"
-                enterKeyHint="search"
-                autoComplete="off"
-                placeholder="Nombre, marca o slug…"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="h-11 min-h-[44px] rounded-xl border-[#e4e4e7] pl-10 text-base sm:text-sm"
-              />
+        <div className={`flex flex-col gap-3 ${embeddedSearch ? "" : "sm:flex-row sm:items-end"}`}>
+          {!embeddedSearch ? (
+            <div className="min-w-0 flex-1 space-y-2">
+              <Label htmlFor="admin-product-search" className="text-xs font-semibold uppercase tracking-wide text-[#71717a]">
+                Buscar
+              </Label>
+              <div className="relative">
+                <Search
+                  className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#a1a1aa]"
+                  aria-hidden
+                />
+                <Input
+                  id="admin-product-search"
+                  type="search"
+                  enterKeyHint="search"
+                  autoComplete="off"
+                  placeholder="Nombre, marca o slug…"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  className="h-11 min-h-[44px] rounded-xl border-[#e4e4e7] pl-10 text-base sm:text-sm"
+                />
+              </div>
             </div>
-          </div>
+          ) : (
+            <p className="text-xs text-[#71717a]">
+              Usá el buscador arriba para filtrar por texto; acá podés afinar por categoría.
+            </p>
+          )}
           <div className="w-full sm:max-w-[min(100%,320px)]">
             <CategoryFilterPicker value={categoryId} onChange={setCategoryId} />
           </div>
@@ -168,8 +180,13 @@ export function ProductsTable({ products }: { products: Product[] }) {
 
                   <div className="min-w-0 flex-1">
                     <p className="text-[11px] font-semibold uppercase tracking-wide text-[#029f9c]">{catLabel}</p>
-                    <h2 className="mt-0.5 line-clamp-2 text-base font-bold leading-snug text-[#18181b] sm:text-[15px]">
-                      {p.name}
+                    <h2 className="mt-0.5 line-clamp-2 text-base font-bold leading-snug sm:text-[15px]">
+                      <Link
+                        href={`/admin/products/${p.id}/edit`}
+                        className="text-[#18181b] decoration-[#029f9c]/40 underline-offset-2 transition-colors hover:text-[#029f9c] hover:underline focus-visible:rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#029f9c]"
+                      >
+                        {p.name}
+                      </Link>
                     </h2>
                     <p className="mt-1 hidden font-mono text-[11px] text-[#a1a1aa] sm:line-clamp-1 md:block">{p.slug}</p>
 

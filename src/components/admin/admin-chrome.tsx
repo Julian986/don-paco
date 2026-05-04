@@ -69,7 +69,7 @@ export default function AdminChrome({ children }: { children: React.ReactNode })
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-[#e4e4e7] bg-white px-4 py-3 md:hidden">
+          <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center justify-between gap-3 border-b border-[#e4e4e7] bg-white px-4 md:hidden">
             <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger asChild>
                 <Button variant="outline" size="icon" aria-label="Abrir menú">

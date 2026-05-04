@@ -1,11 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
 import { deleteProductGroupDisplay, upsertProductGroupDisplay } from "@/actions/product-group-display";
+import { AdminBackNav } from "@/components/admin/admin-back-nav";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -77,6 +77,7 @@ export default function ProductGroupDisplayForm({
 
   return (
     <form onSubmit={onSave} className="mx-auto max-w-2xl space-y-6">
+      <AdminBackNav href="/admin/products">Productos</AdminBackNav>
       <div className="rounded-xl border border-[#e4e4e7] bg-[#fafafa] p-4 text-sm text-[#52525b]">
         <p className="font-semibold text-[#18181b]">Grupo: {groupSlug}</p>
         <p className="mt-1 text-[#71717a]">
@@ -119,9 +120,6 @@ export default function ProductGroupDisplayForm({
         </Button>
         <Button type="button" variant="outline" className="rounded-xl" disabled={busy} onClick={onReset}>
           Restaurar por defecto
-        </Button>
-        <Button type="button" variant="ghost" className="rounded-xl" asChild>
-          <Link href="/admin/products">← Volver a productos</Link>
         </Button>
       </div>
     </form>

@@ -3,18 +3,18 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { createProduct, updateProduct } from "@/actions/product";
 import { uploadProductImage } from "@/actions/cloudinary";
 import { listCategorySelectOptions } from "@/lib/admin-category-select";
 import { formatArs } from "@/lib/product-format";
-import { precioTarjetaDesdeLista } from "@/lib/pricing";
+import { listaDesdePrecioTarjeta, precioTarjetaDesdeLista } from "@/lib/pricing";
 import type { ProductFormValues } from "@/lib/admin/product-form-values";
 import type { GroupSelectOption } from "@/lib/admin/product-form-values";
-import { resolveProductGroupSlug } from "@/lib/product-group-slug";
 import { productPayloadSchema } from "@/lib/validations/product";
+import { AdminBackNav } from "@/components/admin/admin-back-nav";
 import { ProductFormStorefront } from "@/components/admin/product-form-storefront";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -48,13 +48,6 @@ export default function ProductForm({
 
   const lista = form.watch("lista");
   const images = form.watch("images") ?? [];
-  const slugWatch = form.watch("slug");
-  const groupSlugWatch = form.watch("groupSlug");
-  const resolvedEditGroup = resolveProductGroupSlug({
-    slug: (slugWatch || "").trim(),
-    groupSlug: (groupSlugWatch ?? "").trim() || null,
-  });
-
   function appendImage(url: string) {
     form.setValue("images", [...images, url], { shouldValidate: true });
   }
@@ -108,30 +101,28 @@ export default function ProductForm({
     }
   }
 
-  if (layout === "storefront" && mode === "edit" && productId) {
+  if (layout === "storefront") {
     return (
-      <ProductFormStorefront
-        form={form}
-        onSubmit={form.handleSubmit(onSubmit)}
-        onUpload={onUpload}
-        groupSelectOptions={groupSelectOptions}
-      />
+      <>
+        <AdminBackNav href="/admin/products">Productos</AdminBackNav>
+        <ProductFormStorefront
+          mode={mode}
+          form={form}
+          onSubmit={form.handleSubmit(onSubmit)}
+          onUpload={onUpload}
+          groupSelectOptions={groupSelectOptions}
+        />
+      </>
     );
   }
 
   return (
-    <Card className="mx-auto max-w-3xl">
+    <>
+      <AdminBackNav href="/admin/products">Productos</AdminBackNav>
+      <Card className="mx-auto max-w-3xl">
       <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-2">
         <CardTitle>{mode === "create" ? "Nuevo producto" : "Editar producto"}</CardTitle>
         <div className="flex flex-wrap items-center gap-3">
-          {mode === "edit" && resolvedEditGroup ? (
-            <Link
-              href={`/admin/products/groups/${encodeURIComponent(resolvedEditGroup)}`}
-              className="text-sm font-semibold text-[#e4077d] hover:underline"
-            >
-              Editar ficha del grupo
-            </Link>
-          ) : null}
           {mode === "edit" && defaultValues.slug ? (
             <Link
               href={`/productos/${encodeURIComponent(defaultValues.slug)}`}
@@ -215,19 +206,57 @@ export default function ProductForm({
                 talles).
               </p>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="lista">Precio de lista (ARS)</Label>
-              <Input id="lista" type="number" step="1" {...form.register("lista", { valueAsNumber: true })} />
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="lista-tarjeta-card">Precio con tarjeta (ARS)</Label>
+              <p className="text-xs text-[#71717a]">Es el monto grande que ve el cliente en la tienda.</p>
+              <Controller
+                name="lista"
+                control={form.control}
+                render={({ field }) => {
+                  const tarjetaMostrada =
+                    field.value === undefined || field.value === null || Number(field.value) === 0
+                      ? ""
+                      : String(precioTarjetaDesdeLista(Number(field.value)));
+                  return (
+                    <Input
+                      id="lista-tarjeta-card"
+                      type="number"
+                      step="1"
+                      min={0}
+                      value={tarjetaMostrada}
+                      onChange={(e) => {
+                        const raw = e.target.value;
+                        if (raw === "") {
+                          field.onChange(0);
+                          return;
+                        }
+                        const n = Number(raw);
+                        if (!Number.isFinite(n)) return;
+                        field.onChange(listaDesdePrecioTarjeta(n));
+                      }}
+                      onBlur={field.onBlur}
+                      ref={field.ref}
+                    />
+                  );
+                }}
+              />
             </div>
             <div className="space-y-2">
-              <Label>Precio con tarjeta (+10%)</Label>
-              <p className="flex h-9 items-center rounded-md border border-dashed border-[#e4e4e7] bg-[#fafafa] px-3 text-sm font-bold">
-                {formatArs(precioTarjetaDesdeLista(Number(lista) || 0))}
+              <Label>Precio común (sin recargo tarjeta)</Label>
+              <p className="flex h-9 items-center rounded-md border border-dashed border-[#e4e4e7] bg-[#fafafa] px-3 text-sm font-bold text-[#52525b]">
+                {formatArs(Number(lista) || 0)}
               </p>
+              <p className="text-xs text-[#71717a]">Se calcula desde el precio con tarjeta (÷ 1,10).</p>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="cash">Efectivo / transferencia (vacío = usa lista)</Label>
-              <Input id="cash" type="number" step="1" placeholder="Opcional" {...form.register("cash")} />
+              <Label htmlFor="cash">Efectivo / transferencia (opcional)</Label>
+              <Input
+                id="cash"
+                type="number"
+                step="1"
+                placeholder={Number(lista) ? `Vacío = ${formatArs(Number(lista) || 0)}` : "Opcional"}
+                {...form.register("cash")}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="stock">Stock</Label>
@@ -248,8 +277,12 @@ export default function ProductForm({
             </div>
 
             <div className="space-y-3 sm:col-span-2">
-              <Label>Imágenes</Label>
-              <p className="text-xs text-[#71717a]">Subí archivos a Cloudinary o agregá una URL manual.</p>
+              <Label>Imágenes de esta variante</Label>
+              <p className="text-xs text-[#71717a]">
+                Solo para esta variante (presentación en el detalle). La foto de la card cuando hay varias
+                presentaciones juntas se edita en Productos → abrir el grupo → imagen del grupo. Subí a Cloudinary o
+                pegá una URL.
+              </p>
               <div className="flex flex-wrap gap-2">
                 <Button type="button" variant="outline" size="sm" asChild>
                   <label className="cursor-pointer">
@@ -294,5 +327,6 @@ export default function ProductForm({
         </form>
       </CardContent>
     </Card>
+    </>
   );
 }

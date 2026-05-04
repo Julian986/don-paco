@@ -1,4 +1,5 @@
 import { OrdersClient } from "@/app/admin/orders/orders-client";
+import { AdminBackNav } from "@/components/admin/admin-back-nav";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -15,6 +16,7 @@ export default async function AdminOrdersPage() {
 
   return (
     <div className="space-y-6">
+      <AdminBackNav href="/admin/dashboard">Panel</AdminBackNav>
       <div>
         <h1 className="text-2xl font-black text-[#18181b]">Pedidos</h1>
         <p className="text-sm text-[#71717a]">Seguimiento y actualización de estados.</p>

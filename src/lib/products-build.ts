@@ -11,7 +11,7 @@ import { categoryBadgeLabel, isCategoryId, type CategoryId } from "@/lib/categor
 import { CATALOGO_NO_PUBLICADO } from "@/lib/catalogo-reserva";
 import { formatArs } from "@/lib/product-format";
 import { productGroupImageByGroupSlug, productImageBySlug } from "@/lib/product-image-maps";
-import { loadGroupDisplayOverlayMap } from "@/lib/product-group-display-overlays";
+import { loadGroupDisplayOverlayMap, type GroupDisplayOverlay } from "@/lib/product-group-display-overlays";
 import { loadMergedGroupDefinitions } from "@/lib/product-group-merge";
 import { resolveProductGroupSlug } from "@/lib/product-group-slug";
 import type { ProductGroupDefinition } from "@/lib/product-groups";
@@ -35,8 +35,17 @@ function pickPrimaryImageFromUrls(images: string[] | null | undefined, slug: str
   return productImageBySlug[slug];
 }
 
-/** Ficha de grupo: si alguna variante tiene imagen remota (admin), usarla antes que el mapa estático. */
-function pickGroupHeroImage(groupSlug: string, variants: Product[]): string | undefined {
+/**
+ * Ficha de grupo: primero imagen guardada en el panel (`heroImageUrl`), luego variantes (remotas),
+ * mapa estático `productGroupImageByGroupSlug`, por último primera imagen de variante.
+ */
+function pickGroupHeroImage(
+  groupSlug: string,
+  variants: Product[],
+  overlayHeroUrl?: string | null,
+): string | undefined {
+  const fromDb = overlayHeroUrl?.trim();
+  if (fromDb) return fromDb;
   const urls = variants.map((v) => v.imageSrc).filter((u): u is string => Boolean(u));
   const remote = urls.find(isRemoteImageUrl);
   if (remote) return remote;
@@ -58,10 +67,10 @@ function catalogMtimeMs(): number {
 let productsJsonCache: { mtimeMs: number; list: Product[] } | null = null;
 
 function buildDescriptionFromLista(row: { lista: number; cash: number | null }) {
-  const listaTxt = formatArs(row.lista);
+  const comunTxt = formatArs(row.lista);
   const tarjetaTxt = formatArs(precioTarjetaDesdeLista(row.lista));
   const efectivoTxt = formatArs(precioEfectivoTransfer(row.lista, row.cash));
-  return `Precio de lista ${listaTxt}. Con tarjeta de crédito (lista +10%): ${tarjetaTxt}. Efectivo o transferencia: ${efectivoTxt}. Consultá promociones 2x1 en latas y pouches según disponibilidad en el local.`;
+  return `Precio común (referencia efectivo/transferencia): ${comunTxt}. Con tarjeta (+10% sobre ese precio): ${tarjetaTxt}. Efectivo o transferencia según ficha: ${efectivoTxt}. Consultá promociones 2x1 en latas y pouches según disponibilidad en el local.`;
 }
 
 function mapCatalogRowToProduct(row: CatalogRow): Product {
@@ -77,7 +86,7 @@ function mapCatalogRowToProduct(row: CatalogRow): Product {
     cashPrice: precioEfectivoTransfer(row.lista, row.cash),
     categoryId: row.categoryId,
     category: categoryBadgeLabel(row.categoryId),
-    shortDescription: `Lista ${formatArs(row.lista)} · ${row.marca}`,
+    shortDescription: `${formatArs(precioTarjetaDesdeLista(row.lista))} con tarjeta · ${row.marca}`,
     description: desc || buildDescriptionFromLista(row),
     colors: [],
     sizes: [],
@@ -118,7 +127,9 @@ function mapPrismaRowToProduct(row: PrismaProductRow): Product {
     cashPrice: precioEfectivoTransfer(r.lista, cash),
     categoryId,
     category: categoryBadgeLabel(categoryId),
-    shortDescription: desc ? desc.slice(0, 120) : `Lista ${formatArs(r.lista)} · ${r.marca}`,
+    shortDescription: desc
+      ? desc.slice(0, 120)
+      : `${formatArs(precioTarjetaDesdeLista(r.lista))} con tarjeta · ${r.marca}`,
     description: desc || buildDescriptionFromLista({ lista: r.lista, cash }),
     colors: [],
     sizes: [],
@@ -190,7 +201,7 @@ function orderGroupVariants(_groupSlug: string, members: Product[], def: Product
 
 function buildListingFromProducts(
   products: Product[],
-  overlays: Map<string, { displayName: string; description: string | null }>,
+  overlays: Map<string, GroupDisplayOverlay>,
   mergedDefs: Map<string, ProductGroupDefinition>,
 ): ListingEntry[] {
   const groupOrder: string[] = [];
@@ -228,7 +239,7 @@ function buildListingFromProducts(
       groupSlug: gSlug,
       displayName,
       groupDescription: groupDescription || null,
-      imageSrc: pickGroupHeroImage(gSlug, variants),
+      imageSrc: pickGroupHeroImage(gSlug, variants, ov?.heroImageUrl),
       categoryId: variants[0]!.categoryId,
       fromPrice,
       fromCashPrice,
@@ -266,7 +277,7 @@ export async function getGroupListingIfExists(groupSlug: string): Promise<(Listi
     groupSlug,
     displayName,
     groupDescription: groupDescription || null,
-    imageSrc: pickGroupHeroImage(groupSlug, variants),
+    imageSrc: pickGroupHeroImage(groupSlug, variants, ov?.heroImageUrl),
     categoryId: variants[0]!.categoryId,
     fromPrice,
     fromCashPrice,
