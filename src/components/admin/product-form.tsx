@@ -1,18 +1,17 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { Product as DbProduct } from "@prisma/client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { z } from "zod";
 
 import { createProduct, updateProduct } from "@/actions/product";
 import { uploadProductImage } from "@/actions/cloudinary";
 import { listCategorySelectOptions } from "@/lib/admin-category-select";
 import { formatArs } from "@/lib/product-format";
 import { precioTarjetaDesdeLista } from "@/lib/pricing";
+import type { ProductFormValues } from "@/lib/admin/product-form-values";
 import { productPayloadSchema } from "@/lib/validations/product";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,7 +19,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 const formSchema = productPayloadSchema;
-export type ProductFormValues = z.infer<typeof formSchema>;
 
 type Props = {
   mode: "create" | "edit";
@@ -226,20 +224,4 @@ export default function ProductForm({ mode, productId, defaultValues }: Props) {
       </CardContent>
     </Card>
   );
-}
-
-export function productToFormValues(p: DbProduct): ProductFormValues {
-  return {
-    slug: p.slug,
-    name: p.name,
-    marca: p.marca,
-    nombre: p.nombre,
-    description: p.description ?? "",
-    lista: p.lista,
-    cash: p.cash ?? null,
-    categoryId: p.categoryId as ProductFormValues["categoryId"],
-    stock: p.stock,
-    images: [...p.images],
-    destacado: p.destacado,
-  };
 }

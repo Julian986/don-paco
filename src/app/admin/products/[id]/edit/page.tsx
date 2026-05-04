@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 
-import ProductForm, { productToFormValues } from "@/components/admin/product-form";
+import ProductForm from "@/components/admin/product-form";
+import { productToFormValues } from "@/lib/admin/product-form-values";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
