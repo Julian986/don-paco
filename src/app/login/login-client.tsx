@@ -32,7 +32,7 @@ export default function LoginClient() {
         toast.error("Credenciales incorrectas");
         return;
       }
-      toast.success("Bienvenido");
+      toast.success("Bienvenida");
       const rawCallback = searchParams.get("callbackUrl");
       const origin = typeof window !== "undefined" ? window.location.origin : "";
       const next = safeAdminRedirectAfterLogin(rawCallback, origin || "http://localhost");

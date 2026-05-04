@@ -89,7 +89,13 @@ export default function ProductGroupDetailView({ group, relatedProducts }: Produ
               {group.displayName}
             </h1>
             <p className="mb-4 text-[15px] leading-7 text-[#707070]">
-              Elegí el formato (presentación). Los precios son por bolsa; tarjeta de crédito = lista +10%.
+              {group.groupDescription?.trim() ? (
+                <span className="whitespace-pre-wrap">{group.groupDescription.trim()}</span>
+              ) : (
+                <>
+                  Elegí el formato (presentación). Los precios son por bolsa; tarjeta de crédito = lista +10%.
+                </>
+              )}
             </p>
 
             <div className="mb-6 rounded-xl bg-[#f7f7f7] p-4">
@@ -130,7 +136,7 @@ export default function ProductGroupDetailView({ group, relatedProducts }: Produ
                   )}
                 </div>
                 <h3 className="mb-2 text-base font-extrabold uppercase leading-tight text-[#777]">
-                  <Link href={`/productos/${getDetailHrefForProductSlug(item.slug)}`} className="hover:text-[#029f9c]">
+                  <Link href={`/productos/${getDetailHrefForProductSlug(item.slug, item.groupSlug)}`} className="hover:text-[#029f9c]">
                     {item.name}
                   </Link>
                 </h3>

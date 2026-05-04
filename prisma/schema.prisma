@@ -30,8 +30,39 @@ model Product {
   stock       Int      @default(5)
   images      String[]
   destacado   Boolean  @default(false)
+  /// Slug del grupo (`product-groups.ts`); si se setea, la variante aparece en esa ficha agrupada además del mapa estático.
+  groupSlug   String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+/// Textos editables desde el admin para la ficha agrupada (card + detalle). `groupSlug` coincide con `product-groups.ts`.
+model ProductGroupDisplay {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  groupSlug   String   @unique
+  displayName String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+/// Definición persistida: grupos creados en el panel (`isCustom`) y/o nombre/texto que sobreescribe al mapa estático.
+model ProductGroup {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  slug        String   @unique
+  displayName String
+  description String?
+  isCustom    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+/// Redirección 301 cuando se renombra el slug de un grupo (URLs antiguas).
+model GroupSlugRedirect {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  fromSlug  String   @unique
+  toSlug    String
+  createdAt DateTime @default(now())
 }
 
 model Order {

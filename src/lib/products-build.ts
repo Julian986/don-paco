@@ -11,16 +11,39 @@ import { categoryBadgeLabel, isCategoryId, type CategoryId } from "@/lib/categor
 import { CATALOGO_NO_PUBLICADO } from "@/lib/catalogo-reserva";
 import { formatArs } from "@/lib/product-format";
 import { productGroupImageByGroupSlug, productImageBySlug } from "@/lib/product-image-maps";
+import { loadGroupDisplayOverlayMap } from "@/lib/product-group-display-overlays";
+import { loadMergedGroupDefinitions } from "@/lib/product-group-merge";
+import { resolveProductGroupSlug } from "@/lib/product-group-slug";
+import type { ProductGroupDefinition } from "@/lib/product-groups";
+import { getProductGroupDefinition, listGroupSlugs } from "@/lib/product-groups";
 import type { ListingEntry, Product } from "@/lib/product-types";
-import {
-  getGroupSlugForVariantSlug,
-  getProductGroupDefinition,
-  listGroupSlugs,
-} from "@/lib/product-groups";
 import { prisma } from "@/lib/prisma";
 import { precioEfectivoTransfer, precioTarjetaDesdeLista } from "@/lib/pricing";
 
 void CATALOGO_NO_PUBLICADO;
+
+function isRemoteImageUrl(u: string): boolean {
+  return /^https?:\/\//i.test(u.trim());
+}
+
+/** Prioriza URLs remotas (p. ej. Cloudinary) sobre rutas bajo `public/` y sobre el mapa estático. */
+function pickPrimaryImageFromUrls(images: string[] | null | undefined, slug: string): string | undefined {
+  const cleaned = images?.map((u) => u?.trim()).filter((u): u is string => Boolean(u)) ?? [];
+  const remote = cleaned.find(isRemoteImageUrl);
+  if (remote) return remote;
+  if (cleaned.length > 0) return cleaned[0];
+  return productImageBySlug[slug];
+}
+
+/** Ficha de grupo: si alguna variante tiene imagen remota (admin), usarla antes que el mapa estático. */
+function pickGroupHeroImage(groupSlug: string, variants: Product[]): string | undefined {
+  const urls = variants.map((v) => v.imageSrc).filter((u): u is string => Boolean(u));
+  const remote = urls.find(isRemoteImageUrl);
+  if (remote) return remote;
+  const mapped = productGroupImageByGroupSlug[groupSlug];
+  if (mapped) return mapped;
+  return urls[0];
+}
 
 const catalogPath = path.join(process.cwd(), "data", "catalog.json");
 
@@ -80,27 +103,28 @@ export function invalidateCatalogJsonProductCache() {
 }
 
 function mapPrismaRowToProduct(row: PrismaProductRow): Product {
-  const categoryId = (isCategoryId(row.categoryId) ? row.categoryId : "mascota-perro-alimento-seco") as CategoryId;
-  const manual = row.images?.find((u) => u?.trim())?.trim();
-  const imageSrc = manual || productImageBySlug[row.slug];
-  const cash = row.cash ?? null;
-  const desc = row.description?.trim();
+  const r = row as PrismaProductRow & { groupSlug?: string | null };
+  const categoryId = (isCategoryId(r.categoryId) ? r.categoryId : "mascota-perro-alimento-seco") as CategoryId;
+  const imageSrc = pickPrimaryImageFromUrls(r.images ?? undefined, r.slug);
+  const cash = r.cash ?? null;
+  const desc = r.description?.trim();
   return {
-    slug: row.slug,
-    name: row.name,
-    brand: row.marca,
-    precioLista: row.lista,
-    price: precioTarjetaDesdeLista(row.lista),
-    cashPrice: precioEfectivoTransfer(row.lista, cash),
+    slug: r.slug,
+    name: r.name,
+    groupSlug: r.groupSlug ?? null,
+    brand: r.marca,
+    precioLista: r.lista,
+    price: precioTarjetaDesdeLista(r.lista),
+    cashPrice: precioEfectivoTransfer(r.lista, cash),
     categoryId,
     category: categoryBadgeLabel(categoryId),
-    shortDescription: desc ? desc.slice(0, 120) : `Lista ${formatArs(row.lista)} · ${row.marca}`,
-    description: desc || buildDescriptionFromLista({ lista: row.lista, cash }),
+    shortDescription: desc ? desc.slice(0, 120) : `Lista ${formatArs(r.lista)} · ${r.marca}`,
+    description: desc || buildDescriptionFromLista({ lista: r.lista, cash }),
     colors: [],
     sizes: [],
-    stock: row.stock,
+    stock: r.stock,
     imageSrc: imageSrc || undefined,
-    destacado: row.destacado,
+    destacado: r.destacado,
   };
 }
 
@@ -127,69 +151,122 @@ export async function getProductBySlug(slug: string) {
 
 export async function listAllProductPageSlugs(): Promise<string[]> {
   const slugs = new Set<string>();
-  for (const p of await getProducts()) {
+  const products = await getProducts();
+  for (const p of products) {
     slugs.add(p.slug);
+    const g = resolveProductGroupSlug(p);
+    if (g) slugs.add(g);
   }
   for (const g of listGroupSlugs()) {
     slugs.add(g);
   }
+  if (process.env.DATABASE_URL?.trim()) {
+    try {
+      const [groupRows, redirects] = await Promise.all([
+        prisma.productGroup.findMany({ select: { slug: true } }),
+        prisma.groupSlugRedirect.findMany({ select: { fromSlug: true } }),
+      ]);
+      for (const r of groupRows) slugs.add(r.slug);
+      for (const r of redirects) slugs.add(r.fromSlug);
+    } catch {
+      /* ignore */
+    }
+  }
   return [...slugs];
 }
 
-function buildListingFromProducts(products: Product[]): ListingEntry[] {
-  const seenGroups = new Set<string>();
-  const out: ListingEntry[] = [];
+function orderGroupVariants(_groupSlug: string, members: Product[], def: ProductGroupDefinition): Product[] {
+  const bySlug = new Map(members.map((v) => [v.slug, v]));
+  const ordered: Product[] = [];
+  for (const s of def.variantSlugs) {
+    const v = bySlug.get(s);
+    if (v) ordered.push(v);
+  }
+  for (const v of members) {
+    if (!ordered.some((o) => o.slug === v.slug)) ordered.push(v);
+  }
+  return ordered;
+}
+
+function buildListingFromProducts(
+  products: Product[],
+  overlays: Map<string, { displayName: string; description: string | null }>,
+  mergedDefs: Map<string, ProductGroupDefinition>,
+): ListingEntry[] {
+  const groupOrder: string[] = [];
+  const byGroup = new Map<string, Product[]>();
+  const standalone: Product[] = [];
 
   for (const p of products) {
-    const gSlug = getGroupSlugForVariantSlug(p.slug);
-    if (gSlug) {
-      if (seenGroups.has(gSlug)) continue;
-      seenGroups.add(gSlug);
-      const def = getProductGroupDefinition(gSlug);
-      if (!def) continue;
-      const variants = def.variantSlugs
-        .map((s) => products.find((x) => x.slug === s))
-        .filter((x): x is Product => !!x);
-      if (variants.length === 0) continue;
-      const fromPrice = Math.min(...variants.map((v) => v.price));
-      const fromCashPrice = Math.min(...variants.map((v) => v.cashPrice));
-      out.push({
-        type: "group",
-        groupSlug: gSlug,
-        displayName: def.displayName,
-        imageSrc: productGroupImageByGroupSlug[gSlug] ?? variants.find((v) => v.imageSrc)?.imageSrc,
-        categoryId: variants[0]!.categoryId,
-        fromPrice,
-        fromCashPrice,
-        variants,
-      });
-      continue;
+    const gSlug = resolveProductGroupSlug(p);
+    const def = gSlug ? mergedDefs.get(gSlug) : undefined;
+    if (gSlug && def) {
+      if (!byGroup.has(gSlug)) groupOrder.push(gSlug);
+      const arr = byGroup.get(gSlug) ?? [];
+      arr.push(p);
+      byGroup.set(gSlug, arr);
+    } else {
+      standalone.push(p);
     }
+  }
+
+  const out: ListingEntry[] = [];
+
+  for (const gSlug of groupOrder) {
+    const def = mergedDefs.get(gSlug);
+    if (!def) continue;
+    const rawMembers = byGroup.get(gSlug) ?? [];
+    const variants = orderGroupVariants(gSlug, rawMembers, def);
+    if (variants.length === 0) continue;
+    const fromPrice = Math.min(...variants.map((v) => v.price));
+    const fromCashPrice = Math.min(...variants.map((v) => v.cashPrice));
+    const ov = overlays.get(gSlug);
+    const displayName = ov?.displayName?.trim() || def.displayName;
+    const groupDescription = ov?.description?.trim() || null;
+    out.push({
+      type: "group",
+      groupSlug: gSlug,
+      displayName,
+      groupDescription: groupDescription || null,
+      imageSrc: pickGroupHeroImage(gSlug, variants),
+      categoryId: variants[0]!.categoryId,
+      fromPrice,
+      fromCashPrice,
+      variants,
+    });
+  }
+
+  for (const p of standalone) {
     out.push({ type: "product", product: p });
   }
   return out;
 }
 
 export async function buildListingEntries(): Promise<ListingEntry[]> {
-  const products = await getProducts();
-  return buildListingFromProducts(products);
+  const [products, overlays] = await Promise.all([getProducts(), loadGroupDisplayOverlayMap()]);
+  const mergedDefs = await loadMergedGroupDefinitions(products);
+  return buildListingFromProducts(products, overlays, mergedDefs);
 }
 
 export async function getGroupListingIfExists(groupSlug: string): Promise<(ListingEntry & { type: "group" }) | undefined> {
-  const def = getProductGroupDefinition(groupSlug);
+  const [products, overlays] = await Promise.all([getProducts(), loadGroupDisplayOverlayMap()]);
+  const mergedDefs = await loadMergedGroupDefinitions(products);
+  const def = mergedDefs.get(groupSlug);
   if (!def) return undefined;
-  const products = await getProducts();
-  const variants = def.variantSlugs
-    .map((s) => products.find((x) => x.slug === s))
-    .filter((x): x is Product => !!x);
+  const members = products.filter((p) => resolveProductGroupSlug(p) === groupSlug);
+  const variants = orderGroupVariants(groupSlug, members, def);
   if (variants.length === 0) return undefined;
   const fromPrice = Math.min(...variants.map((v) => v.price));
   const fromCashPrice = Math.min(...variants.map((v) => v.cashPrice));
+  const ov = overlays.get(groupSlug);
+  const displayName = ov?.displayName?.trim() || def.displayName;
+  const groupDescription = ov?.description?.trim() || null;
   return {
     type: "group",
     groupSlug,
-    displayName: def.displayName,
-    imageSrc: productGroupImageByGroupSlug[groupSlug] ?? variants.find((v) => v.imageSrc)?.imageSrc,
+    displayName,
+    groupDescription: groupDescription || null,
+    imageSrc: pickGroupHeroImage(groupSlug, variants),
     categoryId: variants[0]!.categoryId,
     fromPrice,
     fromCashPrice,

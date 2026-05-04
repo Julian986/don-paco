@@ -12,7 +12,10 @@ import { listCategorySelectOptions } from "@/lib/admin-category-select";
 import { formatArs } from "@/lib/product-format";
 import { precioTarjetaDesdeLista } from "@/lib/pricing";
 import type { ProductFormValues } from "@/lib/admin/product-form-values";
+import type { GroupSelectOption } from "@/lib/admin/product-form-values";
+import { resolveProductGroupSlug } from "@/lib/product-group-slug";
 import { productPayloadSchema } from "@/lib/validations/product";
+import { ProductFormStorefront } from "@/components/admin/product-form-storefront";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -24,9 +27,18 @@ type Props = {
   mode: "create" | "edit";
   productId?: string;
   defaultValues: ProductFormValues;
+  groupSelectOptions: GroupSelectOption[];
+  /** Edición con layout tipo ficha de tienda (`/productos/...`). */
+  layout?: "card" | "storefront";
 };
 
-export default function ProductForm({ mode, productId, defaultValues }: Props) {
+export default function ProductForm({
+  mode,
+  productId,
+  defaultValues,
+  groupSelectOptions,
+  layout = "card",
+}: Props) {
   const router = useRouter();
   const categories = listCategorySelectOptions();
   const form = useForm<ProductFormValues>({
@@ -36,6 +48,12 @@ export default function ProductForm({ mode, productId, defaultValues }: Props) {
 
   const lista = form.watch("lista");
   const images = form.watch("images") ?? [];
+  const slugWatch = form.watch("slug");
+  const groupSlugWatch = form.watch("groupSlug");
+  const resolvedEditGroup = resolveProductGroupSlug({
+    slug: (slugWatch || "").trim(),
+    groupSlug: (groupSlugWatch ?? "").trim() || null,
+  });
 
   function appendImage(url: string) {
     form.setValue("images", [...images, url], { shouldValidate: true });
@@ -90,20 +108,41 @@ export default function ProductForm({ mode, productId, defaultValues }: Props) {
     }
   }
 
+  if (layout === "storefront" && mode === "edit" && productId) {
+    return (
+      <ProductFormStorefront
+        form={form}
+        onSubmit={form.handleSubmit(onSubmit)}
+        onUpload={onUpload}
+        groupSelectOptions={groupSelectOptions}
+      />
+    );
+  }
+
   return (
     <Card className="mx-auto max-w-3xl">
       <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-2">
         <CardTitle>{mode === "create" ? "Nuevo producto" : "Editar producto"}</CardTitle>
-        {mode === "edit" && defaultValues.slug ? (
-          <Link
-            href={`/productos/${encodeURIComponent(defaultValues.slug)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm font-semibold text-[#029f9c] hover:underline"
-          >
-            Ver en tienda ↗
-          </Link>
-        ) : null}
+        <div className="flex flex-wrap items-center gap-3">
+          {mode === "edit" && resolvedEditGroup ? (
+            <Link
+              href={`/admin/products/groups/${encodeURIComponent(resolvedEditGroup)}`}
+              className="text-sm font-semibold text-[#e4077d] hover:underline"
+            >
+              Editar ficha del grupo
+            </Link>
+          ) : null}
+          {mode === "edit" && defaultValues.slug ? (
+            <Link
+              href={`/productos/${encodeURIComponent(defaultValues.slug)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-semibold text-[#029f9c] hover:underline"
+            >
+              Ver en tienda ↗
+            </Link>
+          ) : null}
+        </div>
       </CardHeader>
       <CardContent>
         <form className="space-y-5" onSubmit={form.handleSubmit(onSubmit)}>
@@ -125,7 +164,17 @@ export default function ProductForm({ mode, productId, defaultValues }: Props) {
             </div>
             <div className="space-y-2 sm:col-span-2">
               <Label htmlFor="slug">Slug (URL)</Label>
-              <Input id="slug" {...form.register("slug")} />
+              <Input
+                id="slug"
+                readOnly={mode === "edit"}
+                className={mode === "edit" ? "cursor-not-allowed bg-[#fafafa] font-mono text-sm" : undefined}
+                {...form.register("slug")}
+              />
+              {mode === "edit" ? (
+                <p className="text-xs text-[#71717a]">
+                  La URL del producto la define el equipo al dar de alta el ítem; para cambiarla, consultá a desarrollo.
+                </p>
+              ) : null}
               {form.formState.errors.slug && (
                 <p className="text-xs text-red-600">{form.formState.errors.slug.message}</p>
               )}
@@ -143,6 +192,28 @@ export default function ProductForm({ mode, productId, defaultValues }: Props) {
                   </option>
                 ))}
               </select>
+            </div>
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="groupSlug">Grupo en catálogo (opcional)</Label>
+              <select
+                id="groupSlug"
+                className="flex h-9 w-full rounded-md border border-[#e4e4e7] bg-white px-3 text-sm"
+                {...form.register("groupSlug")}
+              >
+                <option value="">— Sin grupo (producto suelto en el listado)</option>
+                {groupSelectOptions.map((g) => (
+                  <option key={g.value} value={g.value}>
+                    {g.label}
+                  </option>
+                ))}
+              </select>
+              {form.formState.errors.groupSlug && (
+                <p className="text-xs text-red-600">{form.formState.errors.groupSlug.message}</p>
+              )}
+              <p className="text-xs text-[#71717a]">
+                Si elegís un grupo, esta variante aparece en la misma card que las demás presentaciones (ej. distintos
+                talles).
+              </p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="lista">Precio de lista (ARS)</Label>

@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { isCategoryId } from "@/lib/category-tree";
+import { listGroupSlugs } from "@/lib/product-groups";
 
 const imageRef = z.string().refine(
   (s) => s.startsWith("http://") || s.startsWith("https://") || s.startsWith("/"),
@@ -33,6 +34,21 @@ export const productPayloadSchema = z.object({
   stock: z.coerce.number().int().min(0).max(999_999).default(5),
   images: z.array(imageRef).default([]),
   destacado: z.boolean().default(false),
+  groupSlug: z
+    .union([z.string(), z.null(), z.undefined()])
+    .optional()
+    .transform((v) => {
+      if (v == null || v === "") return null;
+      const s = String(v).trim();
+      return s === "" ? null : s;
+    })
+    .refine((v) => {
+      if (v === null) return true;
+      if (listGroupSlugs().includes(v)) return true;
+      return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(v) && v.length <= 200;
+    }, {
+      message: "Grupo inválido (solo catálogo base o slug kebab) o dejalo vacío",
+    }),
 });
 
 export type ProductPayload = z.infer<typeof productPayloadSchema>;

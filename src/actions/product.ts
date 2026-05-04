@@ -43,7 +43,8 @@ export async function createProduct(raw: unknown) {
       stock: data.stock,
       images: data.images,
       destacado: data.destacado,
-    },
+      groupSlug: data.groupSlug ?? null,
+    } as import("@prisma/client").Prisma.ProductCreateInput,
   });
   revalidateStore();
   return { ok: true as const };
@@ -54,14 +55,10 @@ export async function updateProduct(id: string, raw: unknown) {
   const data = productPayloadSchema.parse(raw);
   const existing = await prisma.product.findUnique({ where: { id } });
   if (!existing) throw new Error("NOT_FOUND");
-  if (data.slug !== existing.slug) {
-    const dup = await prisma.product.findUnique({ where: { slug: data.slug } });
-    if (dup) throw new Error("SLUG_EXISTS");
-  }
   await prisma.product.update({
     where: { id },
     data: {
-      slug: data.slug,
+      slug: existing.slug,
       name: data.name,
       marca: data.marca,
       nombre: data.nombre,
@@ -72,7 +69,8 @@ export async function updateProduct(id: string, raw: unknown) {
       stock: data.stock,
       images: data.images,
       destacado: data.destacado,
-    },
+      groupSlug: data.groupSlug ?? null,
+    } as import("@prisma/client").Prisma.ProductUpdateInput,
   });
   revalidateStore();
   return { ok: true as const };

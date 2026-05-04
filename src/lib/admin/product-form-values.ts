@@ -5,7 +5,10 @@ import { productPayloadSchema } from "@/lib/validations/product";
 
 export type ProductFormValues = z.infer<typeof productPayloadSchema>;
 
+export type GroupSelectOption = { value: string; label: string };
+
 export function productToFormValues(p: Product): ProductFormValues {
+  const row = p as Product & { groupSlug?: string | null };
   return {
     slug: p.slug,
     name: p.name,
@@ -18,5 +21,6 @@ export function productToFormValues(p: Product): ProductFormValues {
     stock: p.stock,
     images: [...p.images],
     destacado: p.destacado,
+    groupSlug: row.groupSlug ?? "",
   };
 }

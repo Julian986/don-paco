@@ -7,6 +7,7 @@ import { signOut } from "next-auth/react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { DialogTitle } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
@@ -76,7 +77,7 @@ export default function AdminChrome({ children }: { children: React.ReactNode })
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="flex flex-col">
-                <p className="mb-4 text-lg font-black text-[#029f9c]">Menú</p>
+                <DialogTitle className="mb-4 text-left text-lg font-black text-[#029f9c]">Menú</DialogTitle>
                 <NavLinks onNavigate={() => setOpen(false)} />
                 <div className="mt-auto pt-6">
                   <Button variant="outline" className="w-full" onClick={() => signOut({ callbackUrl: "/login" })}>

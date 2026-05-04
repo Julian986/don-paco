@@ -1,12 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound, permanentRedirect, redirect } from "next/navigation";
 import PawIcon from "@/components/paw-icon";
 import ProductGroupDetailView from "@/components/product-group-detail-view";
 import ProductDetailActions from "@/components/product-detail-actions";
 import SiteFooter from "@/components/site-footer";
 import SiteHeader from "@/components/site-header";
-import { getGroupSlugForVariantSlug } from "@/lib/product-groups";
+import { resolveProductGroupSlug } from "@/lib/product-group-slug";
 import { formatArs } from "@/lib/products";
 import { getDetailHrefForProductSlug } from "@/lib/product-routing";
 import {
@@ -15,6 +15,7 @@ import {
   getProducts,
   listAllProductPageSlugs,
 } from "@/lib/products-build";
+import { resolveGroupSlugRedirect } from "@/lib/group-slug-redirect";
 
 export const dynamic = "force-dynamic";
 
@@ -29,6 +30,10 @@ export async function generateStaticParams() {
 
 export default async function ProductDetailPage({ params }: ProductDetailPageProps) {
   const { slug } = await params;
+  const canonicalGroupSlug = await resolveGroupSlugRedirect(slug);
+  if (canonicalGroupSlug !== slug) {
+    permanentRedirect(`/productos/${encodeURIComponent(canonicalGroupSlug)}`);
+  }
   const extraZoomOutProductSlugs = new Set(["sieger-pouch-perro"]);
   const zoomInProductSlugs = new Set(["upper-castrado-x1-5"]);
 
@@ -47,12 +52,11 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
     return <ProductGroupDetailView group={group} relatedProducts={relatedProducts} />;
   }
 
-  const groupSlug = getGroupSlugForVariantSlug(slug);
-  if (groupSlug) {
-    redirect(`/productos/${groupSlug}`);
-  }
-
   const product = await getProductBySlug(slug);
+  const redirectGroup = product ? resolveProductGroupSlug(product) : undefined;
+  if (redirectGroup) {
+    redirect(`/productos/${redirectGroup}`);
+  }
 
   if (!product) {
     notFound();
@@ -262,7 +266,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
                   )}
                 </div>
                 <h3 className="mb-2 text-base font-extrabold uppercase leading-tight text-[#777]">
-                  <Link href={`/productos/${getDetailHrefForProductSlug(item.slug)}`} className="hover:text-[#029f9c]">
+                  <Link href={`/productos/${getDetailHrefForProductSlug(item.slug, item.groupSlug)}`} className="hover:text-[#029f9c]">
                     {item.name}
                   </Link>
                 </h3>

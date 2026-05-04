@@ -136,6 +136,23 @@ export function categoryBadgeLabel(id: CategoryId): string {
   return hit?.label ?? id;
 }
 
+/** Último tramo del path (ej. "Seco", "Comederos / bebederos") — útil en UI compacta. */
+export function categoryLeafShortLabel(id: CategoryId): string {
+  const hit = leafList.find((item) => item.id === id);
+  if (!hit) return id;
+  const parts = hit.label.split(" · ");
+  return parts[parts.length - 1]!.trim();
+}
+
+/** Path sin el último tramo (ej. "Por mascota · Perros · Alimentos") o null si es una sola pieza. */
+export function categoryLeafTrailPrefix(id: CategoryId): string | null {
+  const hit = leafList.find((item) => item.id === id);
+  if (!hit) return null;
+  const parts = hit.label.split(" · ");
+  if (parts.length <= 1) return null;
+  return parts.slice(0, -1).join(" · ");
+}
+
 /** Para el listado "Todas": indica mascota (o general) sin depender del nombre del producto. */
 export function petAudienceShortLabel(id: CategoryId): string {
   if (id.startsWith("mascota-perro-")) return "Perro";

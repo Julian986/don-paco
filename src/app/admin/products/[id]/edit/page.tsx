@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 
 import ProductForm from "@/components/admin/product-form";
+import { listGroupSelectOptions } from "@/lib/admin-group-select-options";
 import { productToFormValues } from "@/lib/admin/product-form-values";
 import { prisma } from "@/lib/prisma";
 
@@ -20,5 +21,15 @@ export default async function EditProductPage({ params }: Props) {
   }
   if (!product) notFound();
 
-  return <ProductForm mode="edit" productId={product.id} defaultValues={productToFormValues(product)} />;
+  const groupSelectOptions = await listGroupSelectOptions();
+
+  return (
+    <ProductForm
+      mode="edit"
+      productId={product.id}
+      defaultValues={productToFormValues(product)}
+      groupSelectOptions={groupSelectOptions}
+      layout="storefront"
+    />
+  );
 }
